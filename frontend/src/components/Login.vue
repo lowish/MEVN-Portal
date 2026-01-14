@@ -21,7 +21,7 @@
               <input
                 v-model="username"
                 type="text"
-                placeholder="user name..."
+                placeholder="user name"
                 class="input-field"
                 required
               />
@@ -30,14 +30,14 @@
               <input
                 v-model="password"
                 type="password"
-                placeholder="password..."
+                placeholder="password"
                 class="input-field"
                 required
               />
             </div>
             <button type="submit" class="login-button">Login</button>
           </form>
-          <a href="#" class="forgot-password">Forgot Password?</a>
+          <a href="#" class="register-link">Register</a>
         </div>
       </div>
     </div>
