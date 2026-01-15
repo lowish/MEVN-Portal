@@ -37,7 +37,9 @@
             </div>
             <button type="submit" class="login-button">Login</button>
           </form>
-          <a href="#" class="register-link">Register</a>
+          <div class="register-link">
+            <a href="#" @click.prevent="$emit('go-to-register')">Register here</a>
+          </div>
         </div>
       </div>
     </div>
@@ -67,3 +69,148 @@ export default {
   }
 };
 </script>
+
+<!--Styling-->
+<style>
+  .page-wrapper {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+}
+
+.login-container {
+  display: flex;
+  width: 780px;
+  height: 450px;
+  font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
+  overflow: hidden;
+}
+
+/* Left Section */
+.left-section {
+  flex: 7;
+  background-image: radial-gradient(#eee 40%, #ddd 65%, #bbb 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 50px;
+}
+
+.content {
+  text-align: center;
+  max-width: 100%;
+}
+
+.logo {
+  width: 120px;
+  height: 120px;
+  margin-bottom: 20px;
+  object-fit: contain;
+}
+
+.university-name {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #2c2c2c;
+  margin-bottom: 15px;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+}
+
+.description {
+  font-size: 0.85rem;
+  color: #737373;
+  line-height: 1.6;
+  font-weight: 400;
+}
+
+/* Right Section */
+.right-section {
+  flex: 3;
+  background: #830e2b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 30px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 100%;
+  text-align: center;
+}
+
+.login-title {
+  font-size: 1.17rem;
+  font-weight: bold;
+  color: #ffffff;
+  margin-bottom: 30px;
+  text-align: left;
+}
+
+.form-group {
+  margin-bottom: 15px;
+  position: relative;
+}
+
+.input-field {
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  background: #ffffff;
+  color: #333;
+  transition: all 0.3s ease;
+}
+
+.input-field::placeholder {
+  color: #aaa;
+}
+
+.input-field:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
+}
+
+.login-button {
+  width: 100%;
+  padding: 11px 20px;
+  margin-top: 8px;
+  margin-bottom: 20px;
+  background: #ffffff;
+  color: #000000;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.5s ease;
+  text-transform: capitalize;
+}
+
+.login-button:hover {
+  background: #f8f8f8;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.login-button:active {
+  transform: translateY(0);
+}
+
+.register-link {
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: opacity 0.3s ease;
+  font-weight: 400;
+}
+
+.register-link:hover {
+  opacity: 0.85;
+}
+
+</style>
