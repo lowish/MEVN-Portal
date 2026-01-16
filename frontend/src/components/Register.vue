@@ -124,11 +124,12 @@
                     @click="copyToClipboard(registrationData.studentNumber)"
                     title="Copy to clipboard"
                   >
-                    📋
+                    <FontAwesomeIcon :icon="['fas', 'clipboard']" />
                   </button>
                 </p>
                 <p class="warning-text">
-                  ⚠️ Please save your student number. Redirecting to login in <strong>{{ redirectCountdown }}</strong> seconds...
+                  <FontAwesomeIcon :icon="['fas', 'triangle-exclamation']" />
+                  Please save your student number. Redirecting to login in <strong>{{ redirectCountdown }}</strong> seconds...
                 </p>
               </div>
             </div>
@@ -176,8 +177,14 @@
 <script>
 import axios from 'axios';
 import logoUrl from '../assets/HAU.gif';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faClipboard, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
 
-// API Configuration - Fix the endpoint
+// Add icons to library
+library.add(faClipboard, faTriangleExclamation);
+
+// API Configuration
 const API_URL = 'http://localhost:5000';
 const REGISTER_ENDPOINT = `${API_URL}/api/register`;
 
@@ -187,6 +194,9 @@ axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 export default {
   name: 'Register',
+  components: {
+    FontAwesomeIcon
+  },
   emits: ['go-to-login'],
   data() {
     return {
@@ -384,8 +394,9 @@ export default {
       }
     },
 
+    //Registration successful countdown / Countdown of Student number
     startRedirectCountdown() {
-      this.redirectCountdown = 5;
+      this.redirectCountdown = 60;
 
       if (this.countdownInterval) {
         clearInterval(this.countdownInterval);
@@ -595,6 +606,7 @@ select.input-field {
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
+  color: #830e2b;
 }
 
 .credential-code {
@@ -602,7 +614,6 @@ select.input-field {
   padding: 4px 8px;
   border-radius: 3px;
   font-family: 'Courier New', monospace;
-  color: #1f2937;
   user-select: all;
 }
 
@@ -611,13 +622,15 @@ select.input-field {
   border: none;
   cursor: pointer;
   font-size: 1rem;
-  padding: 0;
+  padding: 0 4px;
   opacity: 0.7;
   transition: opacity 0.2s;
+  color: #830e2b;
 }
 
 .copy-btn:hover {
   opacity: 1;
+  transform: scale(1.1);
 }
 
 .warning-text {
@@ -625,6 +638,14 @@ select.input-field {
   font-size: 0.85rem;
   color: #c33;
   font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.warning-text svg {
+  width: 16px;
+  height: 16px;
 }
 
 .register-button {
