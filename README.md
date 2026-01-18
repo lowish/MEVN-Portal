@@ -1,7 +1,7 @@
 # Vue 3 + Vite
 ## Login page preview
 <p align="center">
-  <img src="./Sample.jpg" alt="Login UI HAU Portal" width="420" />
+  <img src="./frontend/assets/sample.png" alt="Login UI HAU Portal" width="420" />
 </p>
 
 This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
