@@ -183,15 +183,7 @@ import { faClipboard, faTriangleExclamation } from '@fortawesome/free-solid-svg-
 
 // Add icons to library
 library.add(faClipboard, faTriangleExclamation);
-# Pull remote changes and rebase your commits on top
-git pull --rebase origin main
 
-# If there are conflicts, resolve them, then:
-git add .
-git rebase --continue
-
-# Push your changes
-git push origin main
 // API Configuration
 const API_URL = 'http://localhost:5000';
 const REGISTER_ENDPOINT = `${API_URL}/api/register`;
