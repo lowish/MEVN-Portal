@@ -51,7 +51,6 @@ import logoUrl from '../assets/HAU.gif';
 
 export default {
   name: 'Login',
-  emits: ['go-to-register'],
   data() {
     return {
       logoUrl,
@@ -71,8 +70,9 @@ export default {
 };
 </script>
 
-<style scoped>
-.page-wrapper {
+<!--Styling-->
+<style>
+  .page-wrapper {
   display: flex;
   min-height: 100vh;
   width: 100%;
@@ -86,14 +86,12 @@ export default {
   width: 780px;
   height: 450px;
   font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   overflow: hidden;
-  border-radius: 8px;
 }
 
 /* Left Section */
 .left-section {
-  flex: 0 0 70%;
+  flex: 7;
   background-image: radial-gradient(#eee 40%, #ddd 65%, #bbb 100%);
   display: flex;
   align-items: center;
@@ -131,7 +129,7 @@ export default {
 
 /* Right Section */
 .right-section {
-  flex: 0 0 30%;
+  flex: 3;
   background: #830e2b;
   display: flex;
   align-items: center;
@@ -146,8 +144,8 @@ export default {
 }
 
 .login-title {
-  font-size: 1.5rem;
-  font-weight: 600;
+  font-size: 1.17rem;
+  font-weight: bold;
   color: #ffffff;
   margin-bottom: 30px;
   text-align: left;
@@ -160,7 +158,7 @@ export default {
 
 .input-field {
   width: 100%;
-  padding: 12px 12px 12px 35px;
+  padding: 12px 12px 12px 25px;
   border: none;
   border-radius: 4px;
   font-size: 0.9rem;
@@ -168,8 +166,8 @@ export default {
   color: #333;
   transition: all 0.3s ease;
   background-repeat: no-repeat;
-  background-position: 10px center;
-  background-size: 16px 16px;
+  background-position: 5px center;
+  background-size: 15px 15px;
 }
 
 .input-field::placeholder {
@@ -191,17 +189,16 @@ export default {
 
 .login-button {
   width: 100%;
-  padding: 12px 20px;
-  margin-top: 10px;
+  padding: 11px 20px;
+  margin-top: 8px;
   margin-bottom: 20px;
   background: #ffffff;
-  color: #830e2b;
+  color: #000000;
   border: none;
   border-radius: 4px;
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 0.9rem;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.5s ease;
   text-transform: capitalize;
 }
 
@@ -216,20 +213,25 @@ export default {
 }
 
 .register-link {
-  text-align: center;
-  margin-top: 15px;
-  font-size: 0.95rem;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: opacity 0.3s ease;
+  font-weight: 400;
+  color: #ffffff;
 }
 
 .register-link a {
   color: #ffffff;
   text-decoration: none;
-  font-weight: 500;
-  transition: opacity 0.3s ease;
 }
 
 .register-link a:hover {
-  opacity: 0.85;
-  text-decoration: underline;
+  color: #ffffff;
 }
+
+.register-link:hover {
+  opacity: 0.85;
+  color: #ffffff;
+}
+
 </style>
