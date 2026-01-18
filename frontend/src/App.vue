@@ -6,7 +6,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import Login from "./components/Login.vue";
 import Register from "./components/Register.vue";
 
@@ -17,19 +16,8 @@ export default {
   },
   data() {
     return {
-      currentView: 'login',
-      users: []
+      currentView: 'login'
     };
-  },
-  methods: {
-    async getUsers() {
-      try {
-        const res = await axios.get("http://localhost:5000/users"); // call backend API
-        this.users = res.data; // save data to display in frontend
-      } catch (err) {
-        console.error(err);
-      }
-    }
   }
 };
 </script>

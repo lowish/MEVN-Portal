@@ -1,7 +1,6 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const router = express.Router();
-
 const Student = require('../models/Student');
 const Log = require('../models/Log');
 const { sendRegistrationEmail } = require('../utils/emailService');

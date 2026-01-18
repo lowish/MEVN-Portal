@@ -1,29 +1,18 @@
 const mongoose = require('mongoose');
 
 const logSchema = new mongoose.Schema({
-  studentNumber: {
-    type: String,
-    required: true
-  },
-  action: {
-    type: String,
-    required: true,
-    enum: ['REGISTRATION', 'LOGIN_SUCCESS', 'LOGIN_FAILED', 'PASSWORD_CHANGE', 'PROFILE_UPDATE']
-  },
-  timestamp: {
-    type: Date,
-    default: Date.now,
-    index: true
-  },
-  details: {
-    type: String
-  },
-  ipAddress: {
-    type: String
-  },
-  userAgent: {
-    type: String
-  }
+  studentNumber: {type: String, required: true},
+
+  action: {type: String, required: true,
+  enum: ['REGISTRATION', 'LOGIN_SUCCESS', 'LOGIN_FAILED', 'PASSWORD_CHANGE', 'PROFILE_UPDATE']},
+  
+  timestamp: {type: Date, default: Date.now, index: true},
+  
+  details: {type: String},
+
+  ipAddress: {type: String},
+
+  userAgent: {type: String}
 });
 
 // Indexes for faster queries

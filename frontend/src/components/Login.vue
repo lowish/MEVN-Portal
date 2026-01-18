@@ -22,7 +22,7 @@
                 v-model="username"
                 type="text"
                 placeholder="user name"
-                class="input-field"
+                class="input-field user-field"
                 required
               />
             </div>
@@ -31,14 +31,14 @@
                 v-model="password"
                 type="password"
                 placeholder="password"
-                class="input-field"
+                class="input-field password-field"
                 required
               />
             </div>
             <button type="submit" class="login-button">Login</button>
           </form>
           <div class="register-link">
-            <a href="#" @click.prevent="$emit('go-to-register')">Register here</a>
+            <a href="#" @click.prevent="$emit('go-to-register')">Register</a>
           </div>
         </div>
       </div>
@@ -72,6 +72,11 @@ export default {
 
 <!--Styling-->
 <style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
   .page-wrapper {
   display: flex;
   min-height: 100vh;
@@ -158,13 +163,16 @@ export default {
 
 .input-field {
   width: 100%;
-  padding: 12px 16px;
+  padding: 12px 12px 12px 25px;
   border: none;
   border-radius: 4px;
   font-size: 0.9rem;
   background: #ffffff;
   color: #333;
   transition: all 0.3s ease;
+  background-repeat: no-repeat;
+  background-position: 5px center;
+  background-size: 15px 15px;
 }
 
 .input-field::placeholder {
@@ -174,6 +182,14 @@ export default {
 .input-field:focus {
   outline: none;
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
+}
+
+.user-field {
+  background-image: url('../assets/user.png');
+}
+
+.password-field {
+  background-image: url('../assets/key.png');
 }
 
 .login-button {
@@ -202,15 +218,25 @@ export default {
 }
 
 .register-link {
-  color: #ffffff;
   text-decoration: none;
   font-size: 1rem;
   transition: opacity 0.3s ease;
   font-weight: 400;
+  color: #ffffff;
+}
+
+.register-link a {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.register-link a:hover {
+  color: #ffffff;
 }
 
 .register-link:hover {
   opacity: 0.85;
+  color: #ffffff;
 }
 
 </style>
