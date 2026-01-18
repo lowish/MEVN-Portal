@@ -3,7 +3,7 @@
     <div class="register-container">
       <div class="register-card">
         <div class="card-header">
-          <img :src="logoUrl" alt="HAU Logo" class="logo" />
+          <img :src="logoUrl" alt="SOC Logo" class="logo" />
           <h2 class="register-title">Student Registration</h2>
           <p class="register-subtitle">Create your Holy Angel University Portal Account</p>
         </div>
@@ -176,7 +176,7 @@
 
 <script>
 import axios from 'axios';
-import logoUrl from '../assets/HAU.gif';
+import logoUrl from '../assets/SOC.png';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faClipboard, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
