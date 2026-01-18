@@ -51,6 +51,7 @@ import logoUrl from '../assets/HAU.gif';
 
 export default {
   name: 'Login',
+  emits: ['go-to-register'],
   data() {
     return {
       logoUrl,
@@ -70,14 +71,8 @@ export default {
 };
 </script>
 
-<!--Styling-->
-<style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-  .page-wrapper {
+<style scoped>
+.page-wrapper {
   display: flex;
   min-height: 100vh;
   width: 100%;
@@ -91,12 +86,14 @@ export default {
   width: 780px;
   height: 450px;
   font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   overflow: hidden;
+  border-radius: 8px;
 }
 
 /* Left Section */
 .left-section {
-  flex: 7;
+  flex: 0 0 70%;
   background-image: radial-gradient(#eee 40%, #ddd 65%, #bbb 100%);
   display: flex;
   align-items: center;
@@ -134,7 +131,7 @@ export default {
 
 /* Right Section */
 .right-section {
-  flex: 3;
+  flex: 0 0 30%;
   background: #830e2b;
   display: flex;
   align-items: center;
@@ -149,8 +146,8 @@ export default {
 }
 
 .login-title {
-  font-size: 1.17rem;
-  font-weight: bold;
+  font-size: 1.5rem;
+  font-weight: 600;
   color: #ffffff;
   margin-bottom: 30px;
   text-align: left;
@@ -163,7 +160,7 @@ export default {
 
 .input-field {
   width: 100%;
-  padding: 12px 12px 12px 25px;
+  padding: 12px 12px 12px 35px;
   border: none;
   border-radius: 4px;
   font-size: 0.9rem;
@@ -171,8 +168,8 @@ export default {
   color: #333;
   transition: all 0.3s ease;
   background-repeat: no-repeat;
-  background-position: 5px center;
-  background-size: 15px 15px;
+  background-position: 10px center;
+  background-size: 16px 16px;
 }
 
 .input-field::placeholder {
@@ -194,16 +191,17 @@ export default {
 
 .login-button {
   width: 100%;
-  padding: 11px 20px;
-  margin-top: 8px;
+  padding: 12px 20px;
+  margin-top: 10px;
   margin-bottom: 20px;
   background: #ffffff;
-  color: #000000;
+  color: #830e2b;
   border: none;
   border-radius: 4px;
-  font-size: 0.9rem;
+  font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.5s ease;
+  transition: all 0.3s ease;
   text-transform: capitalize;
 }
 
@@ -218,25 +216,20 @@ export default {
 }
 
 .register-link {
-  text-decoration: none;
-  font-size: 1rem;
-  transition: opacity 0.3s ease;
-  font-weight: 400;
-  color: #ffffff;
+  text-align: center;
+  margin-top: 15px;
+  font-size: 0.95rem;
 }
 
 .register-link a {
   color: #ffffff;
   text-decoration: none;
+  font-weight: 500;
+  transition: opacity 0.3s ease;
 }
 
 .register-link a:hover {
-  color: #ffffff;
-}
-
-.register-link:hover {
   opacity: 0.85;
-  color: #ffffff;
+  text-decoration: underline;
 }
-
 </style>
