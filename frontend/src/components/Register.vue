@@ -396,7 +396,7 @@ export default {
 
     //Registration successful countdown / Countdown of Student number
     startRedirectCountdown() {
-      this.redirectCountdown = 60;
+      this.redirectCountdown = 200;
 
       if (this.countdownInterval) {
         clearInterval(this.countdownInterval);

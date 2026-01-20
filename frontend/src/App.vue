@@ -1,24 +1,12 @@
 <template>
   <div id="app">
-    <Login v-if="currentView === 'login'" @go-to-register="currentView = 'register'" />
-    <Register v-else @go-to-login="currentView = 'login'" />
+    <router-view />
   </div>
 </template>
 
 <script>
-import Login from "./components/Login.vue";
-import Register from "./components/Register.vue";
-
 export default {
-  components: {
-    Login,
-    Register
-  },
-  data() {
-    return {
-      currentView: 'login'
-    };
-  }
+  name: 'App'
 };
 </script>
 

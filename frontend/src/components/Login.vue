@@ -19,24 +19,32 @@
           <form @submit.prevent="login">
             <div class="form-group">
               <input
-                v-model="username"
+                v-model="loginData.studentNumber"
                 type="text"
-                placeholder="user name"
+                placeholder="student number"
                 class="input-field user-field"
                 required
               />
             </div>
             <div class="form-group">
               <input
-                v-model="password"
+                v-model="loginData.password"
                 type="password"
                 placeholder="password"
                 class="input-field password-field"
                 required
               />
             </div>
-            <button type="submit" class="login-button">Login</button>
+            <button type="submit" :disabled="loading" class="login-button">
+              {{ loading ? 'Logging in...' : 'Login' }}
+            </button>
           </form>
+
+          <!-- Error/Success Message -->
+          <div v-if="message" :class="['message', messageType]">
+            {{ message }}
+          </div>
+
           <div class="register-link">
             <a href="#" @click.prevent="$emit('go-to-register')">Register</a>
           </div>
@@ -47,6 +55,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 import logoUrl from '../assets/HAU.gif';
 
 export default {
@@ -54,17 +63,77 @@ export default {
   data() {
     return {
       logoUrl,
-      username: '',
-      password: ''
+      loginData: {
+        studentNumber: '',
+        password: ''
+      },
+      loading: false,
+      message: '',
+      messageType: ''
     };
   },
   methods: {
-    login() {
-      // Placeholder logic - will integrate backend later
-      console.log('Login attempted with:', {
-        username: this.username,
-        password: this.password
-      });
+    async login() {
+      try {
+        this.loading = true;
+        this.message = '';
+        this.messageType = '';
+
+        console.log('=== Login Attempt ===');
+        console.log('Student Number:', this.loginData.studentNumber);
+
+        // Validate inputs
+        if (!this.loginData.studentNumber || !this.loginData.password) {
+          this.message = 'Please enter student number and password';
+          this.messageType = 'error';
+          return;
+        }
+
+        // Call backend API
+        const response = await axios.post('http://localhost:5000/api/login', {
+          studentNumber: this.loginData.studentNumber.trim(),
+          password: this.loginData.password
+        });
+
+        console.log('Response:', response.data);
+
+        if (response.data.success) {
+          console.log('✅ Login successful');
+
+          // Store JWT token
+          localStorage.setItem('token', response.data.token);
+          
+          // Store user info
+          localStorage.setItem('user', JSON.stringify(response.data.data));
+
+          this.message = 'Login successful! Redirecting...';
+          this.messageType = 'success';
+
+          // Redirect to dashboard
+          setTimeout(() => {
+            this.$router.push('/dashboard');
+          }, 1000);
+        }
+
+      } catch (error) {
+        console.error('❌ Login error:', error);
+
+        if (error.response) {
+          // Server responded with error
+          this.message = error.response.data.message || 'Login failed';
+        } else if (error.request) {
+          // No response from server
+          this.message = 'Cannot connect to server. Please check if backend is running.';
+        } else {
+          // Other errors
+          this.message = 'An error occurred. Please try again.';
+        }
+        
+        this.messageType = 'error';
+
+      } finally {
+        this.loading = false;
+      }
     }
   }
 };
@@ -202,6 +271,11 @@ export default {
   text-transform: capitalize;
 }
 
+.login-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .login-button:hover {
   background: #f8f8f8;
   transform: translateY(-1px);
@@ -210,6 +284,26 @@ export default {
 
 .login-button:active {
   transform: translateY(0);
+}
+
+.message {
+  margin: 15px 0;
+  padding: 12px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.message.success {
+  background-color: rgba(212, 237, 218, 0.3);
+  color: #ffffff;
+  border: 1px solid rgba(195, 230, 203, 0.5);
+}
+
+.message.error {
+  background-color: rgba(248, 215, 218, 0.3);
+  color: #ffffff;
+  border: 1px solid rgba(245, 198, 203, 0.5);
 }
 
 .register-link {

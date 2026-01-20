@@ -1,10 +1,56 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const router = express.Router();
 const Student = require('../models/Student');
 const Log = require('../models/Log');
 const { sendRegistrationEmail } = require('../utils/emailService');
 const { generateStudentNumber } = require('../utils/passwordGenerator');
+
+// JWT Secret (in production, use environment variable)
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+
+// Middleware to verify JWT token
+const authMiddleware = async (req, res, next) => {
+  try {
+    // Get token from Authorization header
+    const authHeader = req.headers.authorization;
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({
+        success: false,
+        message: 'No token provided'
+      });
+    }
+
+    // Extract token (remove 'Bearer ' prefix)
+    const token = authHeader.substring(7);
+
+    // Verify token
+    const decoded = jwt.verify(token, JWT_SECRET);
+    
+    // Find student
+    const student = await Student.findOne({ studentNumber: decoded.studentNumber }).select('-password');
+    
+    if (!student) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid token'
+      });
+    }
+
+    // Attach student to request
+    req.student = student;
+    next();
+
+  } catch (error) {
+    console.error('Auth middleware error:', error.message);
+    return res.status(401).json({
+      success: false,
+      message: 'Invalid or expired token'
+    });
+  }
+};
 
 /**
  * @route   POST /api/register
@@ -147,11 +193,15 @@ router.post('/register', async (req, res) => {
  * @access  Public
  */
 router.post('/login', async (req, res) => {
+  console.log('\n=== Login Request ===');
+  console.log('Body:', { studentNumber: req.body.studentNumber, password: '***' });
+  
   try {
     const { studentNumber, password } = req.body;
 
     // Validation
     if (!studentNumber || !password) {
+      console.log('❌ Missing fields');
       return res.status(400).json({ 
         success: false,
         message: 'Please provide student number and password' 
@@ -159,8 +209,12 @@ router.post('/login', async (req, res) => {
     }
 
     // Find student
+    console.log('Searching for student:', studentNumber);
     const student = await Student.findOne({ studentNumber });
+    
     if (!student) {
+      console.log('❌ Student not found in database');
+      
       // Log failed attempt
       await Log.create({
         studentNumber,
@@ -174,9 +228,17 @@ router.post('/login', async (req, res) => {
       });
     }
 
+    console.log('✅ Student found:', student.name);
+    console.log('Stored password hash:', student.password.substring(0, 20) + '...');
+
     // Verify password
+    console.log('Verifying password...');
     const isMatch = await bcrypt.compare(password, student.password);
+    console.log('Password match result:', isMatch);
+    
     if (!isMatch) {
+      console.log('❌ Password does not match');
+      
       // Log failed attempt
       await Log.create({
         studentNumber,
@@ -190,6 +252,17 @@ router.post('/login', async (req, res) => {
       });
     }
 
+    console.log('✅ Password verified');
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { studentNumber: student.studentNumber },
+      JWT_SECRET,
+      { expiresIn: '7d' } // Token valid for 7 days
+    );
+
+    console.log('✅ JWT token generated');
+
     // Log successful login
     await Log.create({
       studentNumber,
@@ -197,9 +270,12 @@ router.post('/login', async (req, res) => {
       details: 'Student logged in successfully'
     });
 
+    console.log('=== Login Successful ===\n');
+
     res.json({
       success: true,
       message: 'Login successful',
+      token, // Send token to frontend
       data: {
         studentNumber: student.studentNumber,
         name: student.name,
@@ -208,10 +284,40 @@ router.post('/login', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Login error:', error);
+    console.error('\n❌ Login Error:');
+    console.error('Message:', error.message);
+    console.error('Stack:', error.stack);
+    console.error('=========================\n');
+    
     res.status(500).json({ 
       success: false,
       message: 'Server error during login. Please try again later.' 
+    });
+  }
+});
+
+/**
+ * @route   GET /api/me
+ * @desc    Get current logged-in student info
+ * @access  Protected (requires valid JWT token)
+ */
+router.get('/me', authMiddleware, async (req, res) => {
+  try {
+    // Student data is already attached by authMiddleware
+    res.json({
+      success: true,
+      data: {
+        studentNumber: req.student.studentNumber,
+        name: req.student.name,
+        email: req.student.email,
+        createdAt: req.student.createdAt
+      }
+    });
+  } catch (error) {
+    console.error('Error in /me route:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
     });
   }
 });
