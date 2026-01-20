@@ -174,8 +174,8 @@ export default {
 }
 
 .logo {
-  width: 120px;
-  height: 120px;
+  width: 330px;
+  height: 230px;
   margin-bottom: 20px;
   object-fit: contain;
 }
