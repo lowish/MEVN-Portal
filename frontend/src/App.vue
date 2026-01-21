@@ -6,7 +6,12 @@
 
 <script>
 export default {
-  name: 'App'
+  name: 'App',
+  created() {
+    if (this.$route.path === '/') {
+      this.$router.replace('/login');
+    }
+  }
 };
 </script>
 

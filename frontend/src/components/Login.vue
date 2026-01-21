@@ -46,7 +46,7 @@
           </div>
 
           <div class="register-link">
-            <a href="#" @click.prevent="$emit('go-to-register')">Register</a>
+            <a href="#" @click.prevent="goToRegister">Register</a>
           </div>
         </div>
       </div>
@@ -60,6 +60,7 @@ import logoUrl from '../assets/HAU.gif';
 
 export default {
   name: 'Login',
+  emits: ['go-to-register'],
   data() {
     return {
       logoUrl,
@@ -109,10 +110,7 @@ export default {
           this.message = 'Login successful! Redirecting...';
           this.messageType = 'success';
 
-          // Redirect to dashboard
-          setTimeout(() => {
-            this.$router.push('/dashboard');
-          }, 1000);
+          this.$router.push('/dashboard');
         }
 
       } catch (error) {
@@ -134,6 +132,9 @@ export default {
       } finally {
         this.loading = false;
       }
+    },
+    goToRegister() {
+      this.$router.push('/register');
     }
   }
 };
