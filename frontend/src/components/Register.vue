@@ -3,16 +3,17 @@
     <div class="register-container">
       <div class="register-card">
         <div class="card-header">
-          <img :src="logoUrl" alt="SOC Logo" class="logo" />
           <h2 class="register-title">Student Registration</h2>
           <p class="register-subtitle">Create your Holy Angel University Portal Account</p>
+          <img :src="logoUrl" alt="SOC Logo" class="hau-subtext-logo" />
         </div>
-
+        
         <form @submit.prevent="handleRegister" class="register-form" novalidate>
-          <!-- Full Name Field -->
+         
+          <!-- Full Name section -->
           <div class="form-group">
             <label for="fullName" class="form-label">
-              Full Name
+              Name
               <span class="required">*</span>
             </label>
             <input
@@ -31,7 +32,7 @@
             </span>
           </div>
 
-          <!-- Email Field -->
+          <!-- Email section -->
           <div class="form-group">
             <label for="email" class="form-label">
               Email Address
@@ -41,7 +42,7 @@
               id="email"
               v-model="formData.email"
               type="email"
-              placeholder="Enter your email (e.g., student@gmail.com)"
+              placeholder="Enter your email (example@gmail.com)"
               class="input-field"
               :class="{ 'field-error-border': fieldErrors.email }"
               required
@@ -53,7 +54,123 @@
             </span>
           </div>
 
-          <!-- Password Field -->
+          <!-- Birth Date section -->
+          <div class="form-group">
+            <label for="birthDate" class="form-label">
+              Date of Birth
+              <span class="optional">(Optional)</span>
+            </label>
+            <input
+              id="birthDate"
+              v-model="formData.birthDate"
+              type="date"
+              placeholder="Select your birth date"
+              class="input-field"
+            />
+          </div>
+
+          <!-- Gender section -->
+          <div class="form-group">
+            <label for="gender" class="form-label">
+              Gender
+              <span class="optional">(Optional)</span>
+            </label>
+            <select
+              id="gender"
+              v-model="formData.gender"
+              class="input-field"
+            >
+              <option value="">Select gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+              <option value="Prefer not to say">Prefer not to say</option>
+            </select>
+          </div>
+
+          <!-- Religion section -->
+          <div class="form-group">
+            <label for="religion" class="form-label">
+              Religion
+              <span class="optional">(Optional)</span>
+            </label>
+            <input
+              id="religion"
+              v-model="formData.religion"
+              type="text"
+              placeholder="Enter your religion"
+              class="input-field"
+            />
+          </div>
+
+          <!-- Mobile section -->
+          <div class="form-group">
+            <label for="mobile" class="form-label">
+              Mobile Number
+              <span class="optional">(Optional)</span>
+            </label>
+            <input
+              id="mobile"
+              v-model="formData.mobile"
+              type="tel"
+              placeholder="Enter your mobile number"
+              class="input-field"
+            />
+          </div>
+
+          <!-- Address section -->
+          <div class="form-group">
+            <label for="address" class="form-label">
+              Address
+              <span class="optional">(Optional)</span>
+            </label>
+            <input
+              id="address"
+              v-model="formData.address"
+              type="text"
+              placeholder="Enter your address"
+              class="input-field"
+            />
+          </div>
+
+          <!-- Course section -->
+          <div class="form-group">
+            <label for="course" class="form-label">
+              Course
+              <span class="required">*</span>
+            </label>
+            <input
+              id="course"
+              v-model="formData.course"
+              type="text"
+              placeholder="Enter your course"
+              class="input-field"
+              :class="{ 'field-error-border': fieldErrors.course }"
+              required
+              @blur="validateField('course')"
+              @input="validateField('course')"
+            />
+            <span v-if="fieldErrors.course" class="field-error">
+              {{ fieldErrors.course }}
+            </span>
+          </div>
+
+          <!-- Year Level section -->
+          <div class="form-group">
+            <label for="yearLevel" class="form-label">
+              Year Level
+              <span class="optional">(Optional)</span>
+            </label>
+            <input
+              id="yearLevel"
+              v-model="formData.yearLevel"
+              type="text"
+              placeholder="Enter your year level"
+              class="input-field"
+            />
+          </div>
+
+          <!-- Password section -->
           <div class="form-group">
             <label for="password" class="form-label">
               Password
@@ -73,12 +190,9 @@
             <span v-if="fieldErrors.password" class="field-error">
               {{ fieldErrors.password }}
             </span>
-            <p v-if="!fieldErrors.password" class="field-hint">
-              💡 Password must be at least 6 characters long
-            </p>
           </div>
 
-          <!-- Confirm Password Field -->
+          <!-- Confirm Password section -->
           <div class="form-group">
             <label for="confirmPassword" class="form-label">
               Confirm Password
@@ -97,6 +211,22 @@
             />
             <span v-if="fieldErrors.confirmPassword" class="field-error">
               {{ fieldErrors.confirmPassword }}
+            </span>
+          </div>
+
+          <!-- Agree Terms -->
+          <div class="form-group">
+            <label class="form-label">
+              <input
+                type="checkbox"
+                v-model="formData.agreeTerms"
+                @change="validateField('agreeTerms')"
+              />
+              I agree to the Terms of Service and Privacy Policy
+              <span class="required">*</span>
+            </label>
+            <span v-if="fieldErrors.agreeTerms" class="field-error">
+              {{ fieldErrors.agreeTerms }}
             </span>
           </div>
 
@@ -162,10 +292,10 @@
             Already have an account?
             <a 
               href="#" 
-              @click.prevent="$emit('go-to-login')" 
+              @click.prevent="$router.push('login')" 
               class="login-link"
             >
-              Sign in here
+              Sign in
             </a>
           </p>
         </div>
@@ -177,6 +307,7 @@
 <script>
 import axios from 'axios';
 import logoUrl from '../assets/SOC.png';
+import hauLogo from '../assets/HAU.gif';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faClipboard, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
@@ -201,17 +332,28 @@ export default {
   data() {
     return {
       logoUrl,
+      hauLogo,
       formData: {
         fullName: '',
+        birthDate: '',
+        gender: '',
+        religion: '',
         email: '',
+        mobile: '',
+        address: '',
+        course: '',
+        yearLevel: '',
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        agreeTerms: false
       },
       fieldErrors: {
         fullName: '',
         email: '',
+        course: '',
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        agreeTerms: ''
       },
       loading: false,
       errorMessage: '',
@@ -226,8 +368,10 @@ export default {
       return (
         !this.formData.fullName.trim() ||
         !this.formData.email.trim() ||
+        !this.formData.course.trim() ||
         !this.formData.password ||
         !this.formData.confirmPassword ||
+        !this.formData.agreeTerms ||
         Object.values(this.fieldErrors).some(error => error !== '')
       );
     }
@@ -262,6 +406,14 @@ export default {
           }
           break;
 
+        case 'course':
+          if (!this.formData.course.trim()) {
+            this.fieldErrors.course = 'Course is required';
+          } else {
+            this.fieldErrors.course = '';
+          }
+          break;
+
         case 'password':
           if (!this.formData.password) {
             this.fieldErrors.password = 'Password is required';
@@ -284,14 +436,24 @@ export default {
             this.fieldErrors.confirmPassword = '';
           }
           break;
+
+        case 'agreeTerms':
+          if (!this.formData.agreeTerms) {
+            this.fieldErrors.agreeTerms = 'You must agree to the terms';
+          } else {
+            this.fieldErrors.agreeTerms = '';
+          }
+          break;
       }
     },
 
     validateForm() {
       this.validateField('fullName');
       this.validateField('email');
+      this.validateField('course');
       this.validateField('password');
       this.validateField('confirmPassword');
+      this.validateField('agreeTerms');
 
       return !Object.values(this.fieldErrors).some(error => error !== '');
     },
@@ -317,9 +479,18 @@ export default {
 
       // Create clean payload
       const registrationPayload = {
-        name: this.formData.fullName.trim(),
+        fullName: this.formData.fullName.trim(),
+        birthDate: this.formData.birthDate || null,
+        gender: this.formData.gender || '',
+        religion: this.formData.religion || '',
         email: this.formData.email.trim().toLowerCase(),
-        password: this.formData.password
+        mobile: this.formData.mobile || '',
+        address: this.formData.address || '',
+        course: this.formData.course.trim(),
+        yearLevel: this.formData.yearLevel || '',
+        password: this.formData.password,
+        confirmPassword: this.formData.confirmPassword,
+        agreeTerms: this.formData.agreeTerms
       };
 
       console.log('📝 [REGISTER] Submitting registration request');
@@ -350,17 +521,27 @@ export default {
         // Reset form
         this.formData = {
           fullName: '',
+          birthDate: '',
+          gender: '',
+          religion: '',
           email: '',
+          mobile: '',
+          address: '',
+          course: '',
+          yearLevel: '',
           password: '',
-          confirmPassword: ''
+          confirmPassword: '',
+          agreeTerms: false
         };
 
         // Reset field errors
         this.fieldErrors = {
           fullName: '',
           email: '',
+          course: '',
           password: '',
-          confirmPassword: ''
+          confirmPassword: '',
+          agreeTerms: ''
         };
 
         // Start countdown and redirect
@@ -449,7 +630,7 @@ export default {
 
 .register-container {
   width: 100%;
-  max-width: 500px;
+  max-width: 900px;
 }
 
 .register-card {
@@ -457,34 +638,48 @@ export default {
   border-radius: 8px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   padding: 40px;
+  display: grid;
+  grid-template-areas:
+    "header form"
+    "footer form";
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 24px;
+  align-items: start;
 }
 
 .card-header {
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-.logo {
-  width: 80px;
-  height: 80px;
-  margin-bottom: 15px;
-  object-fit: contain;
+  grid-area: header;
+  margin-bottom: 0;
+  position: sticky;
+  top: 0;
 }
 
 .register-title {
   font-size: 1.8rem;
   font-weight: 700;
   color: #2c2c2c;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
+  margin-top: 60px;
+  text-align: center;
 }
 
 .register-subtitle {
   font-size: 0.95rem;
   color: #737373;
+  text-align: center;
+}
+
+.hau-subtext-logo {
+  width: 380px;
+  height: auto;
+  display: block;
+  margin-top: 10px;
+  object-fit: contain;
 }
 
 .register-form {
-  margin-bottom: 20px;
+  grid-area: form;
+  margin-bottom: 0;
 }
 
 .form-group {
@@ -717,9 +912,10 @@ select.input-field {
 }
 
 .card-footer {
-  text-align: center;
-  padding-top: 15px;
-  border-top: 1px solid #e5e7eb;
+  grid-area: footer;
+  text-align: left;
+  padding-top: 0;
+  align-self: end;
 }
 
 .card-footer p {
@@ -737,5 +933,23 @@ select.input-field {
 .login-link:hover {
   opacity: 0.8;
   text-decoration: underline;
+}
+
+/* Responsive fallback */
+@media (max-width: 900px) {
+  .register-card {
+    display: block;
+  }
+  .card-header {
+    position: static;
+    margin-bottom: 30px;
+  }
+  .register-form {
+    margin-bottom: 20px;
+  }
+  .card-footer {
+    text-align: center;
+    padding-top: 15px;
+  }
 }
 </style>

@@ -110,108 +110,38 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'StudentDashboard',
-  
-  data() {
-    return {
-      student: {
-        name: '',
-        studentNumber: '',
-        email: '',
-        status: 'Active'
-      },
-      showProfileModal: false,
-      showEditModal: false
-    };
-  },
+<script setup>
+import { ref, onMounted } from 'vue';
+import { studentAPI } from '../services/api';
 
-  mounted() {
-    this.loadUserData();
-  },
+const student = ref(null);
+const loading = ref(true);
+const error = ref('');
 
-  methods: {
-    loadUserData() {
-      try {
-        // Get user data from localStorage
-        const userData = localStorage.getItem('user');
-        
-        if (userData) {
-          const user = JSON.parse(userData);
-          console.log('Loaded user data:', user);
-          
-          this.student = {
-            name: user.name || 'N/A',
-            studentNumber: user.studentNumber || 'N/A',
-            email: user.email || 'N/A',
-            status: 'Active'
-          };
-        } else {
-          console.warn('No user data found in localStorage');
-          // Redirect to login if no user data
-          this.$router.push('/login');
-        }
-      } catch (error) {
-        console.error('Error loading user data:', error);
-        this.$router.push('/login');
-      }
-    },
-
-    viewProfile() {
-      console.log('View Profile clicked');
-      
-      // Create detailed profile view
-      const profileDetails = `
-=== Student Profile ===
-Name: ${this.student.name}
-Student Number: ${this.student.studentNumber}
-Email: ${this.student.email}
-Status: ${this.student.status}
-      `;
-      
-      alert(profileDetails);
-      
-      // TODO: Replace with a proper modal or route to profile page
-    },
-    
-    editProfile() {
-      console.log('Edit Profile clicked');
-      
-      // Placeholder for edit functionality
-      const newName = prompt('Enter new name:', this.student.name);
-      
-      if (newName && newName.trim()) {
-        this.student.name = newName.trim();
-        
-        // Update localStorage
-        const userData = JSON.parse(localStorage.getItem('user'));
-        userData.name = newName.trim();
-        localStorage.setItem('user', JSON.stringify(userData));
-        
-        alert('Profile updated successfully!');
-      }
-      
-      // TODO: Replace with a proper edit form/modal
-    },
-    
-    logout() {
-      console.log('Logout clicked');
-      
-      // Confirm logout
-      if (confirm('Are you sure you want to logout?')) {
-        // Clear all stored data
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        
-        console.log('✅ User logged out');
-        
-        // Redirect to login
-        this.$router.push('/login');
-      }
-    }
-  }
+const formatDate = (date) => {
+  if (!date) return 'Not provided';
+  return new Date(date).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
 };
+
+const displayValue = (value) => {
+  return value && value.trim() !== '' ? value : 'Not provided';
+};
+
+onMounted(async () => {
+  try {
+    const response = await studentAPI.getProfile();
+    student.value = response.data;
+  } catch (err) {
+    error.value = err.response?.data?.message || 'Failed to load profile';
+    console.error('Error fetching profile:', err);
+  } finally {
+    loading.value = false;
+  }
+});
 </script>
 
 <style scoped>

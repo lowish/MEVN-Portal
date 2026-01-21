@@ -62,10 +62,21 @@ router.post('/register', async (req, res) => {
   console.log('Body:', { name: req.body.name, email: req.body.email, password: '***' });
   
   try {
-    const { name, email, password } = req.body;
+    const { 
+      fullName,
+      birthDate,
+      gender,
+      religion,
+      email,
+      mobile,
+      address,
+      course,
+      yearLevel,
+      password
+    } = req.body;
 
     // Validation
-    if (!name || !email || !password) {
+    if (!fullName || !email || !password) {
       console.log('❌ Missing required fields');
       return res.status(400).json({ 
         success: false,
@@ -116,15 +127,21 @@ router.post('/register', async (req, res) => {
 
     // Create new student
     console.log('Creating student document...');
-    const newStudent = new Student({
-      studentNumber,
-      name: name.trim(),
-      email: email.toLowerCase().trim(),
+    const student = new Student({
+      fullName,
+      birthDate: birthDate || null,
+      gender: gender || '',
+      religion: religion || '',
+      email,
+      mobile: mobile || '',
+      address: address || '',
+      course,
+      yearLevel: yearLevel || '',
       password: hashedPassword
     });
 
     console.log('Saving to database...');
-    await newStudent.save();
+    await student.save();
     console.log('✅ Student saved to database');
 
     // Log registration
@@ -132,7 +149,7 @@ router.post('/register', async (req, res) => {
       await Log.create({
         studentNumber,
         action: 'REGISTRATION',
-        details: `New student registered: ${name}`
+        details: `New student registered: ${fullName}`
       });
       console.log('✅ Log created');
     } catch (logError) {
@@ -144,8 +161,8 @@ router.post('/register', async (req, res) => {
     try {
       console.log('Attempting to send email...');
       emailSent = await sendRegistrationEmail({
-        email: newStudent.email,
-        name: newStudent.name,
+        email: student.email,
+        name: student.fullName,
         studentNumber
       });
       
@@ -168,8 +185,8 @@ router.post('/register', async (req, res) => {
         : 'Registration successful! You can now login.',
       data: {
         studentNumber,
-        name: newStudent.name,
-        email: newStudent.email
+        name: student.fullName,
+        email: student.email
       }
     });
 
@@ -197,29 +214,29 @@ router.post('/login', async (req, res) => {
   console.log('Body:', { studentNumber: req.body.studentNumber, password: '***' });
   
   try {
-    const { studentNumber, password } = req.body;
+    const { email, password } = req.body;
 
     // Validation
-    if (!studentNumber || !password) {
+    if (!email || !password) {
       console.log('❌ Missing fields');
       return res.status(400).json({ 
         success: false,
-        message: 'Please provide student number and password' 
+        message: 'Please provide email and password' 
       });
     }
 
     // Find student
-    console.log('Searching for student:', studentNumber);
-    const student = await Student.findOne({ studentNumber });
+    console.log('Searching for student:', email);
+    const student = await Student.findOne({ email });
     
     if (!student) {
       console.log('❌ Student not found in database');
       
       // Log failed attempt
       await Log.create({
-        studentNumber,
+        studentNumber: email,
         action: 'LOGIN_FAILED',
-        details: 'Invalid student number'
+        details: 'Invalid email'
       });
       
       return res.status(401).json({ 
@@ -228,7 +245,7 @@ router.post('/login', async (req, res) => {
       });
     }
 
-    console.log('✅ Student found:', student.name);
+    console.log('✅ Student found:', student.fullName);
     console.log('Stored password hash:', student.password.substring(0, 20) + '...');
 
     // Verify password
@@ -241,7 +258,7 @@ router.post('/login', async (req, res) => {
       
       // Log failed attempt
       await Log.create({
-        studentNumber,
+        studentNumber: email,
         action: 'LOGIN_FAILED',
         details: 'Invalid password'
       });
@@ -265,7 +282,7 @@ router.post('/login', async (req, res) => {
 
     // Log successful login
     await Log.create({
-      studentNumber,
+      studentNumber: email,
       action: 'LOGIN_SUCCESS',
       details: 'Student logged in successfully'
     });
@@ -278,7 +295,7 @@ router.post('/login', async (req, res) => {
       token, // Send token to frontend
       data: {
         studentNumber: student.studentNumber,
-        name: student.name,
+        name: student.fullName,
         email: student.email
       }
     });
@@ -308,7 +325,7 @@ router.get('/me', authMiddleware, async (req, res) => {
       success: true,
       data: {
         studentNumber: req.student.studentNumber,
-        name: req.student.name,
+        name: req.student.fullName,
         email: req.student.email,
         createdAt: req.student.createdAt
       }
