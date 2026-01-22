@@ -90,12 +90,15 @@ export default {
           return;
         }
 
-        // Call backend API
-        const response = await axios.post('http://localhost:5000/api/login', {
+        const payload = {
           studentNumber: this.loginData.studentNumber.trim(),
-          password: this.loginData.password
-        });
+          password: this.loginData.password.trim(),
+        };
+        
+        console.log('Sending payload:', payload);
 
+        // Call backend API
+        const response = await axios.post('http://localhost:5000/api/auth/login', payload);
         console.log('Response:', response.data);
 
         if (response.data.success) {

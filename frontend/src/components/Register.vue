@@ -316,8 +316,9 @@ import { faClipboard, faTriangleExclamation } from '@fortawesome/free-solid-svg-
 library.add(faClipboard, faTriangleExclamation);
 
 // API Configuration
-const API_URL = 'http://localhost:5000';
-const REGISTER_ENDPOINT = `${API_URL}/api/register`;
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const REGISTER_PATH = import.meta.env.VITE_REGISTER_PATH || '/api/auth/register';
+const REGISTER_ENDPOINT = `${API_BASE_URL.replace(/\/$/, '')}${REGISTER_PATH.startsWith('/') ? '' : '/'}${REGISTER_PATH}`;
 
 // Set axios defaults
 axios.defaults.timeout = 10000;
@@ -458,6 +459,31 @@ export default {
       return !Object.values(this.fieldErrors).some(error => error !== '');
     },
 
+    getErrorMessage(error) {
+      if (error.response) {
+        const { status, data, headers } = error.response;
+        const isHtml = typeof data === 'string' && data.includes('<!DOCTYPE html>');
+        if (status === 404) {
+          return `Registration endpoint not found (404). Current endpoint: ${REGISTER_ENDPOINT}. Check your backend route and VITE_API_URL/VITE_REGISTER_PATH.`;
+        }
+        if (headers && headers['content-type'] && headers['content-type'].includes('application/json') && data && data.message) {
+          return data.message;
+        }
+        if (isHtml) {
+          return 'Server returned HTML instead of JSON. Verify the backend route and response format.';
+        }
+        return 'Registration failed. Please try again.';
+      } else if (error.request) {
+        return (
+          'Cannot connect to server. Please check:\n' +
+          '• Backend is running on http://localhost:5000\n' +
+          '• MongoDB is running\n' +
+          '• No firewall blocking the connection'
+        );
+      }
+      return error.message || 'An unexpected error occurred.';
+    },
+
     async handleRegister() {
       this.errorMessage = '';
       this.successMessage = '';
@@ -496,9 +522,9 @@ export default {
       console.log('📝 [REGISTER] Submitting registration request');
       console.log('🔗 [REGISTER] Endpoint:', REGISTER_ENDPOINT);
       console.log('📦 [REGISTER] Payload:', {
-        name: registrationPayload.name,
+        fullName: registrationPayload.fullName,
         email: registrationPayload.email,
-        password: '***' // Hide password in logs
+        password: '***'
       });
 
       try {
@@ -551,25 +577,7 @@ export default {
         console.error('❌ [REGISTER] Registration failed');
         console.error('🔍 [REGISTER] Full error:', error);
 
-        if (error.response) {
-          // Backend returned an error
-          console.error('📤 [REGISTER] Response status:', error.response.status);
-          console.error('📤 [REGISTER] Response data:', error.response.data);
-          this.errorMessage = error.response.data.message || 'Registration failed. Please try again.';
-        } else if (error.request) {
-          // Request was made but no response
-          console.error('🌐 [REGISTER] No response from server');
-          console.error('🌐 [REGISTER] Request:', error.request);
-          this.errorMessage = 
-            'Cannot connect to server. Please check:\n' +
-            '• Backend is running on http://localhost:5000\n' +
-            '• MongoDB is running\n' +
-            '• No firewall blocking the connection';
-        } else {
-          // Something else happened
-          console.error('⚡ [REGISTER] Error:', error.message);
-          this.errorMessage = error.message || 'An unexpected error occurred.';
-        }
+        this.errorMessage = this.getErrorMessage(error);
       } finally {
         this.loading = false;
       }
