@@ -82,22 +82,22 @@ exports.register = async (req, res) => {
 // Login student
 exports.login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { studentNumber, password } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({ message: 'Please provide email and password' });
+    if (!studentNumber || !password) {
+      return res.status(400).json({ message: 'Please provide student number and password' });
     }
 
-    // Find student by email
-    const student = await Student.findOne({ email });
+    // Find student by studentNumber
+    const student = await Student.findOne({ studentNumber });
     if (!student) {
-      return res.status(401).json({ message: 'Invalid email or password' });
+      return res.status(401).json({ message: 'Invalid student number or password' });
     }
 
     // Check password
     const isMatch = await student.comparePassword(password);
     if (!isMatch) {
-      return res.status(401).json({ message: 'Invalid email or password' });
+      return res.status(401).json({ message: 'Invalid student number or password' });
     }
 
     // Generate token
@@ -106,10 +106,9 @@ exports.login = async (req, res) => {
     res.json({
       message: 'Login successful',
       token,
-      student: {
-        id: student._id,
+      data: {
         studentNumber: student.studentNumber,
-        fullName: student.fullName,
+        name: student.fullName,
         email: student.email
       }
     });

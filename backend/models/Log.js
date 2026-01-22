@@ -6,7 +6,7 @@ const logSchema = new mongoose.Schema({
   action: {type: String, required: true,
   enum: ['REGISTRATION', 'LOGIN_SUCCESS', 'LOGIN_FAILED', 'PASSWORD_CHANGE', 'PROFILE_UPDATE']},
   
-  timestamp: {type: Date, default: Date.now, index: true},
+  timestamp: {type: Date, default: Date.now},
   
   details: {type: String},
 

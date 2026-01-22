@@ -15,7 +15,7 @@ app.use(express.json());
 // Database connection
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/student_portal';
 mongoose.connect(MONGO_URI)
-  .then(() => console.log('MongoDB connected'))
+  .then(() => console.log('MongoDB connected to student_portal'))
   .catch(err => console.error('MongoDB connection error:', err));
 
 // Routes

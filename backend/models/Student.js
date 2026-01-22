@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
+
+// Use student_portal connection
+const studentPortalConnection = mongoose.createConnection(process.env.MONGO_URI_STUDENT_PORTAL);
 
 const studentSchema = new mongoose.Schema({
   // Auto-generated
@@ -75,9 +77,9 @@ const studentSchema = new mongoose.Schema({
 });
 
 // Generate student number before saving
-studentSchema.pre('save', async function(next) {
+studentSchema.pre('save', async function() {
   // Generate student number only for new documents
-  if (this.isNew) {
+  if (this.isNew && !this.studentNumber) {
     const year = new Date().getFullYear();
     const count = await mongoose.model('Student').countDocuments();
     const sequence = String(count + 1).padStart(5, '0');
@@ -89,8 +91,6 @@ studentSchema.pre('save', async function(next) {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
   }
-  
-  next();
 });
 
 // Compare password method
@@ -98,4 +98,4 @@ studentSchema.methods.comparePassword = async function(candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
-module.exports = mongoose.model('Student', studentSchema);
+module.exports = studentPortalConnection.model('Student', studentSchema);
