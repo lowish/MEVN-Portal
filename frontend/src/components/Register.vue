@@ -139,17 +139,22 @@
               Course
               <span class="required">*</span>
             </label>
-            <input
+            <select
               id="course"
               v-model="formData.course"
-              type="text"
-              placeholder="Enter your course"
               class="input-field"
               :class="{ 'field-error-border': fieldErrors.course }"
               required
               @blur="validateField('course')"
-              @input="validateField('course')"
-            />
+              @change="validateField('course')"
+            >
+              <option values="null" disabled>Select your course</option>
+              <option values="Web development">Web development</option>
+              <option values="Cybersecurity">Cybersecurity</option>
+              <option values="Multimedia">Multimedia</option>
+              <option values="Computer Science">Computer Science</option>
+              <option values="Networking Administration">Networking Administration</option>
+            </select>
             <span v-if="fieldErrors.course" class="field-error">
               {{ fieldErrors.course }}
             </span>
