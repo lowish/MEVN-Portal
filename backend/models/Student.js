@@ -22,7 +22,7 @@ const studentSchema = new mongoose.Schema({
   },
   gender: {
     type: String,
-    enum: ['Male', 'Female', 'Other', 'Prefer not to say', ''],
+    enum: ['Male', 'Female', 'Other', ''],
     default: ''
   },
   religion: {
@@ -53,8 +53,11 @@ const studentSchema = new mongoose.Schema({
   // Academic Information
   course: {
     type: String,
-    required: [true, 'Course is required'],
-    trim: true
+    required: [true, 'Required select a course'],
+    trim: true,
+    enum: {
+      values: ['Web development', 'Cybersecurity', 'Multimedia', 'Computer Science', 'Networking Administration'],
+    }
   },
   yearLevel: {
     type: String,
