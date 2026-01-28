@@ -21,7 +21,7 @@
               <input
                 v-model="loginData.studentNumber"
                 type="text"
-                placeholder="student number"
+                placeholder="username..."
                 class="input-field user-field"
                 required
               />
@@ -185,12 +185,13 @@ export default {
 }
 
 .university-name {
-  font-size: 1.8rem;
-  font-weight: 700;
+  font-size: 2rem;
+  font-weight: bold;
   color: #2c2c2c;
   margin-bottom: 15px;
   letter-spacing: -0.5px;
   line-height: 1.2;
+  unicode-bidi: isolate;
 }
 
 .description {
@@ -203,7 +204,7 @@ export default {
 /* Right Section */
 .right-section {
   flex: 3;
-  background: #830e2b;
+  background: #710e1d;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -220,8 +221,9 @@ export default {
   font-size: 1.17rem;
   font-weight: bold;
   color: #ffffff;
-  margin-bottom: 30px;
+  margin-bottom: 25px;
   text-align: left;
+  margin-left: 20px;
 }
 
 .form-group {
@@ -230,10 +232,10 @@ export default {
 }
 
 .input-field {
-  width: 100%;
-  padding: 12px 12px 12px 25px;
+  width: 155px;
+  padding: 10px 10px 10px 28px;
   border: none;
-  border-radius: 4px;
+  border-radius: 7px;
   font-size: 0.9rem;
   background: #ffffff;
   color: #333;
@@ -244,7 +246,8 @@ export default {
 }
 
 .input-field::placeholder {
-  color: #aaa;
+  color: #847c7c;
+  font-size: 13px;
 }
 
 .input-field:focus {
@@ -261,15 +264,14 @@ export default {
 }
 
 .login-button {
-  width: 100%;
-  padding: 11px 20px;
-  margin-top: 8px;
-  margin-bottom: 20px;
+  width: 70px;
+  padding: 10px 15px;
+  margin-bottom: 22px;
   background: #ffffff;
   color: #000000;
   border: none;
-  border-radius: 4px;
-  font-size: 0.9rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
   cursor: pointer;
   transition: all 0.5s ease;
   text-transform: capitalize;
@@ -312,9 +314,9 @@ export default {
 
 .register-link {
   text-decoration: none;
-  font-size: 1rem;
+  font-size: 0.9rem;
   transition: opacity 0.3s ease;
-  font-weight: 400;
+  font-weight: 300;
   color: #ffffff;
 }
 
