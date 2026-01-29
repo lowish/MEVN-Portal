@@ -20,7 +20,7 @@
               id="fullName"
               v-model="formData.fullName"
               type="text"
-              placeholder="Enter your full name"
+              placeholder="Full name"
               class="input-field"
               :class="{ 'field-error-border': fieldErrors.fullName }"
               required
@@ -42,7 +42,7 @@
               id="email"
               v-model="formData.email"
               type="email"
-              placeholder="Enter your email (example@gmail.com)"
+              placeholder="example@gmail.com"
               class="input-field"
               :class="{ 'field-error-border': fieldErrors.email }"
               required
@@ -58,7 +58,6 @@
           <div class="form-group">
             <label for="birthDate" class="form-label">
               Date of Birth
-              <span class="optional">(Optional)</span>
             </label>
             <input
               id="birthDate"
@@ -73,18 +72,17 @@
           <div class="form-group">
             <label for="gender" class="form-label">
               Gender
-              <span class="optional">(Optional)</span>
             </label>
             <select
               id="gender"
               v-model="formData.gender"
               class="input-field"
+              :class="{ 'placeholder-active': !formData.gender }"
             >
-              <option value="">Select gender</option>
+              <option value="" disabled selected>Select your gender</option>
               <option value="Male">Male</option>
               <option value="Female">Female</option>
               <option value="Other">Other</option>
-              <option value="Prefer not to say">Prefer not to say</option>
             </select>
           </div>
 
@@ -92,7 +90,6 @@
           <div class="form-group">
             <label for="religion" class="form-label">
               Religion
-              <span class="optional">(Optional)</span>
             </label>
             <input
               id="religion"
@@ -107,7 +104,6 @@
           <div class="form-group">
             <label for="mobile" class="form-label">
               Mobile Number
-              <span class="optional">(Optional)</span>
             </label>
             <input
               id="mobile"
@@ -122,13 +118,12 @@
           <div class="form-group">
             <label for="address" class="form-label">
               Address
-              <span class="optional">(Optional)</span>
             </label>
             <input
               id="address"
               v-model="formData.address"
               type="text"
-              placeholder="Enter your address"
+              placeholder="Complete address"
               class="input-field"
             />
           </div>
@@ -148,12 +143,12 @@
               @blur="validateField('course')"
               @change="validateField('course')"
             >
-              <option values="null" disabled>Select your course</option>
-              <option values="Web development">Web development</option>
-              <option values="Cybersecurity">Cybersecurity</option>
-              <option values="Multimedia">Multimedia</option>
-              <option values="Computer Science">Computer Science</option>
-              <option values="Networking Administration">Networking Administration</option>
+              <option value="" disabled selected>Select your course</option>
+              <option value="Web development">Web development</option>
+              <option value="Cybersecurity">Cybersecurity</option>
+              <option value="Multimedia">Multimedia</option>
+              <option value="Computer Science">Computer Science</option>
+              <option value="Networking Administration">Networking Administration</option>
             </select>
             <span v-if="fieldErrors.course" class="field-error">
               {{ fieldErrors.course }}
@@ -164,13 +159,11 @@
           <div class="form-group">
             <label for="yearLevel" class="form-label">
               Year Level
-              <span class="optional">(Optional)</span>
             </label>
             <input
               id="yearLevel"
               v-model="formData.yearLevel"
               type="text"
-              placeholder="Enter your year level"
               class="input-field"
             />
           </div>
@@ -185,7 +178,7 @@
               id="password"
               v-model="formData.password"
               type="password"
-              placeholder="Enter a password (at least 6 characters)"
+              placeholder="At least 6 characters"
               class="input-field"
               :class="{ 'field-error-border': fieldErrors.password }"
               required
@@ -668,18 +661,22 @@ export default {
 }
 
 .register-title {
-  font-size: 1.8rem;
-  font-weight: 700;
+  font-size: 2rem;
+  font-weight: bold;
   color: #2c2c2c;
   margin-bottom: 12px;
   margin-top: 60px;
   text-align: center;
+  font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
 }
 
 .register-subtitle {
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   color: #737373;
   text-align: center;
+  line-height: 2;
+  font-weight: 400;
+  font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
 }
 
 .hau-subtext-logo {
@@ -712,11 +709,6 @@ export default {
   color: #dc2626;
 }
 
-.optional {
-  color: #6b7280;
-  font-weight: 400;
-  font-size: 0.85rem;
-}
 
 .input-field {
   width: 100%;
