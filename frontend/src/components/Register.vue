@@ -14,7 +14,7 @@
           <div class="form-group">
             <label for="fullName" class="form-label">
               Name
-              <span class="required">*</span>
+              <span class="required"></span>
             </label>
             <input
               id="fullName"
@@ -36,7 +36,7 @@
           <div class="form-group">
             <label for="email" class="form-label">
               Email Address
-              <span class="required">*</span>
+              <span class="required"></span>
             </label>
             <input
               id="email"
@@ -132,7 +132,7 @@
           <div class="form-group">
             <label for="course" class="form-label">
               Course
-              <span class="required">*</span>
+              <span class="required"></span>
             </label>
             <select
               id="course"
@@ -172,7 +172,7 @@
           <div class="form-group">
             <label for="password" class="form-label">
               Password
-              <span class="required">*</span>
+              <span class="required"></span>
             </label>
             <input
               id="password"
@@ -194,7 +194,7 @@
           <div class="form-group">
             <label for="confirmPassword" class="form-label">
               Confirm Password
-              <span class="required">*</span>
+              <span class="required"></span>
             </label>
             <input
               id="confirmPassword"
@@ -221,7 +221,7 @@
                 @change="validateField('agreeTerms')"
               />
               I agree to the Terms of Service and Privacy Policy
-              <span class="required">*</span>
+              <span class="required"></span>
             </label>
             <span v-if="fieldErrors.agreeTerms" class="field-error">
               {{ fieldErrors.agreeTerms }}
