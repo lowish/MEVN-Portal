@@ -58,6 +58,9 @@
 import axios from 'axios';
 import logoUrl from '../assets/HAU.gif';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+const LOGIN_ENDPOINT = `${API_BASE_URL}/api/auth/login`;
+
 export default {
   name: 'Login',
   emits: ['go-to-register'],
@@ -96,9 +99,10 @@ export default {
         };
         
         console.log('Sending payload:', payload);
+        console.log('Endpoint:', LOGIN_ENDPOINT);
 
         // Call backend API
-        const response = await axios.post('http://localhost:5000/api/auth/login', payload);
+        const response = await axios.post(LOGIN_ENDPOINT, payload);
         console.log('Response:', response.data);
 
         if (response.data.success) {
@@ -124,7 +128,7 @@ export default {
           this.message = error.response.data.message || 'Login failed';
         } else if (error.request) {
           // No response from server
-          this.message = 'Cannot connect to server. Please check if backend is running.';
+          this.message = 'Cannot connect to server. Please check if backend is running on port 5001.';
         } else {
           // Other errors
           this.message = 'An error occurred. Please try again.';
