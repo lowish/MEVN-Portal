@@ -17,14 +17,22 @@
     <!-- Main Dashboard Container -->
     <div class="dashboard-container">
       
+      <!-- Loading State -->
+      <div v-if="loading" class="loading">Loading dashboard...</div>
+
+      <!-- Error State -->
+      <div v-if="error" class="error-banner">
+        {{ error }}
+      </div>
+
       <!-- Welcome Banner -->
-      <div class="welcome-banner">
-        <h2>Welcome back, {{ student.name }}! 👋</h2>
+      <div v-if="!loading && student" class="welcome-banner">
+        <h2>Welcome back, {{ student.name || 'Student' }}! 👋</h2>
         <p>Here's your dashboard overview</p>
       </div>
 
       <!-- Student Information Card -->
-      <div class="info-card">
+      <div v-if="!loading && student" class="info-card">
         <div class="card-header">
           <h3>📋 Student Information</h3>
         </div>
@@ -36,7 +44,7 @@
               <span class="icon">👤</span>
               <span>Full Name</span>
             </div>
-            <div class="info-value">{{ student.name }}</div>
+            <div class="info-value">{{ student.name || 'Not provided' }}</div>
           </div>
 
           <!-- Student Number -->
@@ -45,7 +53,7 @@
               <span class="icon">🎓</span>
               <span>Student Number</span>
             </div>
-            <div class="info-value">{{ student.studentNumber }}</div>
+            <div class="info-value">{{ student.studentNumber || 'Not provided' }}</div>
           </div>
 
           <!-- Email -->
@@ -54,7 +62,7 @@
               <span class="icon">✉️</span>
               <span>Email Address</span>
             </div>
-            <div class="info-value">{{ student.email }}</div>
+            <div class="info-value">{{ student.email || 'Not provided' }}</div>
           </div>
 
           <!-- Account Status -->
@@ -64,14 +72,14 @@
               <span>Account Status</span>
             </div>
             <div class="info-value">
-              <span class="status-badge active">{{ student.status }}</span>
+              <span class="status-badge active">Active</span>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Dashboard Actions -->
-      <div class="actions-section">
+      <div v-if="!loading && student" class="actions-section">
         <h3>Quick Actions</h3>
         
         <div class="action-cards">
@@ -110,38 +118,66 @@
   </div>
 </template>
 
-<script setup>
+<script>
 import { ref, onMounted } from 'vue';
-import { studentAPI } from '../services/api';
+import { useRouter } from 'vue-router';
 
-const student = ref(null);
-const loading = ref(true);
-const error = ref('');
+export default {
+  name: 'StudentDashboard',
+  setup() {
+    const router = useRouter();
+    const student = ref(null);
+    const loading = ref(true);
+    const error = ref('');
 
-const formatDate = (date) => {
-  if (!date) return 'Not provided';
-  return new Date(date).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
-};
+    onMounted(() => {
+      try {
+        // Get student data from localStorage (set during login)
+        const userData = localStorage.getItem('user');
+        
+        if (!userData) {
+          error.value = 'No user data found. Please login again.';
+          setTimeout(() => router.push('/login'), 2000);
+          return;
+        }
 
-const displayValue = (value) => {
-  return value && value.trim() !== '' ? value : 'Not provided';
-};
+        student.value = JSON.parse(userData);
+        console.log('✅ Student data loaded:', student.value);
+      } catch (err) {
+        error.value = 'Failed to load profile';
+        console.error('Error loading profile:', err);
+      } finally {
+        loading.value = false;
+      }
+    });
 
-onMounted(async () => {
-  try {
-    const response = await studentAPI.getProfile();
-    student.value = response.data;
-  } catch (err) {
-    error.value = err.response?.data?.message || 'Failed to load profile';
-    console.error('Error fetching profile:', err);
-  } finally {
-    loading.value = false;
+    const viewProfile = () => {
+      console.log('Viewing profile...');
+      alert('Profile view coming soon!');
+    };
+
+    const editProfile = () => {
+      console.log('Editing profile...');
+      alert('Profile edit coming soon!');
+    };
+
+    const logout = () => {
+      console.log('Logging out...');
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      router.push('/login');
+    };
+
+    return {
+      student,
+      loading,
+      error,
+      viewProfile,
+      editProfile,
+      logout
+    };
   }
-});
+};
 </script>
 
 <style scoped>
