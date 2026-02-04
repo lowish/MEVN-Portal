@@ -542,6 +542,26 @@ export default {
         this.successMessage = response.data.message;
         this.registrationData = response.data.data;
 
+        // Store registration data in localStorage for Student Dashboard
+        const dataToStore = {
+          fullName: registrationPayload.fullName,
+          birthDate: this.formatDateForDisplay(registrationPayload.birthDate),
+          gender: registrationPayload.gender,
+          religion: registrationPayload.religion,
+          email: registrationPayload.email,
+          mobile: registrationPayload.mobile,
+          address: registrationPayload.address,
+          course: registrationPayload.course,
+          yearLevel: registrationPayload.yearLevel,
+          studentNumber: response.data.data.studentNumber || this.generateStudentNumber(),
+          registeredAt: new Date().toISOString()
+        };
+
+        console.log('💾 [REGISTER] Storing registration data:', dataToStore);
+        localStorage.setItem('registrationData', JSON.stringify(dataToStore));
+        localStorage.setItem('studentNumber', dataToStore.studentNumber);
+        localStorage.setItem('userEmail', registrationPayload.email);
+
         // Reset form
         this.formData = {
           fullName: '',
@@ -568,7 +588,7 @@ export default {
           agreeTerms: ''
         };
 
-        // Start countdown and redirect
+        // Start countdown and redirect to dashboard
         this.startRedirectCountdown();
 
       } catch (error) {
@@ -581,9 +601,8 @@ export default {
       }
     },
 
-    //Registration successful countdown / Countdown of Student number
     startRedirectCountdown() {
-      this.redirectCountdown = 30;
+      this.redirectCountdown = 5;
 
       if (this.countdownInterval) {
         clearInterval(this.countdownInterval);
@@ -595,10 +614,26 @@ export default {
 
         if (this.redirectCountdown <= 0) {
           clearInterval(this.countdownInterval);
-          console.log('🎯 [REGISTER] Redirecting to login page');
-          this.$emit('go-to-login');
+          console.log('🎯 [REGISTER] Redirecting to student dashboard');
+          // Redirect to Student Dashboard instead of login
+          this.$router.push('/student-dashboard');
         }
       }, 1000);
+    },
+
+    formatDateForDisplay(dateString) {
+      if (!dateString) return 'Not specified';
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    },
+
+    generateStudentNumber() {
+      // Fallback student number generator
+      return `HAU${Date.now().toString().slice(-8)}`;
     },
 
     copyToClipboard(text) {
