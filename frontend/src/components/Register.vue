@@ -230,7 +230,7 @@
 
           <!-- Error Message -->
           <div v-if="errorMessage" class="alert alert-error">
-            <span class="alert-icon">⚠️</span>
+            <span class="alert-icon"></span>
             <div class="alert-content">
               <p>{{ errorMessage }}</p>
             </div>
@@ -583,7 +583,7 @@ export default {
 
     //Registration successful countdown / Countdown of Student number
     startRedirectCountdown() {
-      this.redirectCountdown = 200;
+      this.redirectCountdown = 30;
 
       if (this.countdownInterval) {
         clearInterval(this.countdownInterval);
@@ -759,6 +759,7 @@ select.input-field {
   border-radius: 4px;
   margin-bottom: 15px;
   font-size: 0.9rem;
+  text-align: center;
   display: flex;
   align-items: flex-start;
   gap: 8px;
@@ -780,9 +781,9 @@ select.input-field {
 }
 
 .alert-success {
-  background: #dcfce7;
-  border: 1px solid #86efac;
-  color: #166534;
+  background: #830e2b;
+  border: 1px solid #ffffff;
+  color: #ffffff;
 }
 
 .credentials-display {
