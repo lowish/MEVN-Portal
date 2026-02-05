@@ -94,7 +94,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
-import hauLogo from "../assets/HAU.gif";
+import hauLogo from "../assets/dashboardlogo.png";
 
 const router = useRouter();
 
@@ -225,7 +225,7 @@ onUnmounted(() => {
 /* ===== Header Bar ===== */
 .header-bar {
   width: 100%;
-  height: 90px;
+  height: 100px;
   background: #fff;
   border-bottom: 1px solid #e5e5e5;
   display: flex;
@@ -281,9 +281,10 @@ onUnmounted(() => {
 }
 
 .logo-img {
+  margin-top: 20px;
   height: 100px;
-  max-height: 150px;
-  width: auto;
+  max-height: 100px;
+  width: 240px;
   object-fit: contain;
 }
 
