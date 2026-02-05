@@ -13,6 +13,9 @@
           <img class="logo-img" :src="hauLogo" alt="HAU logo" />
         </div>
       </div>
+      <div class="header-center">
+        <span class="portal-title">Portal Main Menu</span>
+      </div>
       <div class="header-right">
         <div class="header-item">Policy</div>
         <div class="header-item">Help</div>
@@ -45,68 +48,116 @@
       </aside>
 
       <main class="content">
-        <section class="card">
-          <div class="card-header">Basic Student Information</div>
-          <div class="card-body">
-            <!-- Column 1: Avatar -->
-            <div class="col-left">
-              <div class="avatar"></div>
-            </div>
-            <!-- Column 2: Name -->
-            <div class="col-center">
-              <div class="student-name">
-                <span class="last-name">{{ student.lastName }} ,</span><br>
-                <span class="first-name">{{ student.firstName }}</span>
-                <template v-if="student.middleName">
-                  <br>
-                  <span class="middle-name">{{ student.middleName }}</span>
-                </template>
+        <div class="dashboard-grid">
+          <!-- Left Column: Student Information -->
+          <div class="left-column">
+            <section class="card">
+              <div class="card-header">Basic Student Information</div>
+              <div class="card-body">
+                <!-- Column 1: Avatar -->
+                <div class="col-left">
+                  <img class="avatar" :src="studentPfp" alt="Student Avatar" />
+                </div>
+                <!-- Column 2: Name -->
+                <div class="col-center">
+                  <div class="student-name" :class="{ 'sidebar-collapsed': sidebarCollapsed }">
+                    <span class="last-name">{{ student.lastName }} ,</span><br>
+                    <span class="first-name">{{ student.firstName }}</span>
+                    <template v-if="student.middleName">
+                      <span v-if="sidebarCollapsed"> </span><br v-else>
+                      <span class="middle-name">{{ student.middleName }}</span>
+                    </template>
+                  </div>
+                </div>
+                <!-- Vertical Divider -->
+                <div class="divider"></div>
+                <!-- Column 3: Details -->
+                <div class="col-right">
+                  <div class="detail-row">
+                    <div class="label">Student Number:</div>
+                    <div class="value">{{ student.studentNumber }}</div>
+                  </div>
+                  <div class="detail-row">
+                    <div class="label">Gender:</div>
+                    <div class="value">{{ student.gender }}</div>
+                  </div>
+                  <div class="detail-row">
+                    <div class="label">Birth Date</div>
+                    <div class="value">{{ student.birthDate }}</div>
+                  </div>
+                  <div class="detail-row">
+                    <div class="label">Nationality:</div>
+                    <div class="value">{{ student.nationality }}</div>
+                  </div>
+                  <div class="detail-row">
+                    <div class="label">Religion:</div>
+                    <div class="value">{{ student.religion }}</div>
+                  </div>
+                </div>
               </div>
-            </div>
-            <!-- Vertical Divider -->
-            <div class="divider"></div>
-            <!-- Column 3: Details -->
-            <div class="col-right">
-              <div class="detail-row">
-                <div class="label">Student Number:</div>
-                <div class="value">{{ student.studentNumber }}</div>
-              </div>
-              <div class="detail-row">
-                <div class="label">Gender:</div>
-                <div class="value">{{ student.gender }}</div>
-              </div>
-              <div class="detail-row">
-                <div class="label">Birth Date</div>
-                <div class="value">{{ student.birthDate }}</div>
-              </div>
-              <div class="detail-row">
-                <div class="label">Nationality:</div>
-                <div class="value">{{ student.nationality }}</div>
-              </div>
-              <div class="detail-row">
-                <div class="label">Religion:</div>
-                <div class="value">{{ student.religion }}</div>
-              </div>
-            </div>
+            </section>
           </div>
-        </section>
+
+          <!-- Right Column: Calendar and Account Security -->
+          <div class="right-column">
+            <!-- Account Security Information -->
+            <section class="card security-card">
+              <div class="card-header">Account Security Information</div>
+              <div class="card-body security-body">
+                <!-- Empty for now as per requirements -->
+              </div>
+            </section>
+
+            <!-- Calendar -->
+            <section class="card calendar-card">
+              <div class="calendar-header">
+                <button class="calendar-nav" @click="previousMonth">←</button>
+                <span class="calendar-title">{{ currentMonthYear }}</span>
+                <button class="calendar-nav" @click="nextMonth">→</button>
+              </div>
+              <div class="calendar-grid">
+                <div class="calendar-day-header sunday">Sun</div>
+                <div class="calendar-day-header">Mon</div>
+                <div class="calendar-day-header">Tue</div>
+                <div class="calendar-day-header">Wed</div>
+                <div class="calendar-day-header">Thu</div>
+                <div class="calendar-day-header">Fri</div>
+                <div class="calendar-day-header">Sat</div>
+                <div
+                  v-for="day in calendarDays"
+                  :key="day.key"
+                  :class="
+                    'calendar-day',
+                    { 'empty': !day.date },
+                    { 'sunday': day.isSunday },
+                    { 'today': day.isToday }
+                  "
+                >
+                  {{ day.date }}
+                </div>
+              </div>
+              <div class="calendar-footer">
+                <div class="event-title">Event(s) for Today</div>
+                <div class="event-content">No event(s)</div>
+              </div>
+            </section>
+          </div>
+        </div>
       </main>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import hauLogo from "../assets/dashboardlogo.png";
+import studentPfp from "../assets/studentpfp.png";
 
 const router = useRouter();
 
-// Account dropdown toggle
 const showAccountMenu = ref(false);
 const accountDropdownRef = ref(null);
-
-// Sidebar toggle
 const sidebarCollapsed = ref(false);
 
 const toggleSidebar = () => {
@@ -124,50 +175,39 @@ const closeAccountMenu = () => {
 const viewProfile = () => {
   console.log("View Profile clicked");
   closeAccountMenu();
-  // router.push("/profile");
 };
 
 const logout = () => {
   console.log("Logout clicked");
   closeAccountMenu();
-
-  // Clear authentication data
   localStorage.removeItem("authToken");
   localStorage.removeItem("user");
   localStorage.removeItem("registrationData");
   sessionStorage.removeItem("authToken");
   sessionStorage.removeItem("user");
-
-  // Redirect to login page
   router.push("/login");
 };
 
-// Close dropdown when clicking outside
 const handleClickOutside = (event) => {
   if (accountDropdownRef.value && !accountDropdownRef.value.contains(event.target)) {
     closeAccountMenu();
   }
 };
 
-// Parse full name into last, first, middle name
 const parseFullName = (fullName) => {
   if (!fullName) {
     return { lastName: "", firstName: "", middleName: "" };
   }
-
   const nameParts = fullName.trim().split(/\s+/);
   if (nameParts.length === 1) {
     return { lastName: nameParts[0], firstName: "", middleName: "" };
   }
-
   const firstName = nameParts[0];
   const lastName = nameParts[nameParts.length - 1];
   const middleName = nameParts.slice(1, -1).join(" ");
-
   return { lastName, firstName, middleName };
 };
 
-// Initialize student data from localStorage or registration
 const student = ref({
   lastName: "Doe",
   firstName: "John",
@@ -179,27 +219,59 @@ const student = ref({
   religion: "Catholic",
 });
 
+const currentDate = ref(new Date());
+
+const currentMonthYear = computed(() => {
+  const months = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December",
+  ];
+  return `${months[currentDate.value.getMonth()]} ${currentDate.value.getFullYear()}`;
+});
+
+const calendarDays = computed(() => {
+  const year = currentDate.value.getFullYear();
+  const month = currentDate.value.getMonth();
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const today = new Date();
+  const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
+  const days = [];
+  for (let i = 0; i < firstDay; i++) {
+    days.push({ key: `empty-${i}`, date: null, isSunday: false, isToday: false });
+  }
+  for (let date = 1; date <= daysInMonth; date++) {
+    const dayOfWeek = new Date(year, month, date).getDay();
+    days.push({
+      key: `day-${date}`,
+      date,
+      isSunday: dayOfWeek === 0,
+      isToday: isCurrentMonth && date === today.getDate(),
+    });
+  }
+  return days;
+});
+
+const previousMonth = () => {
+  currentDate.value = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth() - 1, 1);
+};
+
+const nextMonth = () => {
+  currentDate.value = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth() + 1, 1);
+};
+
 onMounted(() => {
   document.addEventListener("click", handleClickOutside);
-  
-  // Fetch student data from localStorage (set during registration)
   const registrationData = localStorage.getItem("registrationData");
-  
-  console.log('📂 [DASHBOARD] Checking for registration data...');
-  
+  console.log("📂 [DASHBOARD] Checking for registration data...");
   if (registrationData) {
     try {
       const parsedData = JSON.parse(registrationData);
-      console.log('✅ [DASHBOARD] Registration data found:', parsedData);
-      
-      // Parse full name
+      console.log("✅ [DASHBOARD] Registration data found:", parsedData);
       const nameParts = parseFullName(parsedData.fullName || "");
-      
-      // Generate student number if not provided
       const studentNumber = parsedData.studentNumber || 
                            localStorage.getItem("studentNumber") ||
                            `HAU${Date.now().toString().slice(-8)}`;
-      
       student.value = {
         lastName: nameParts.lastName || "Not provided",
         firstName: nameParts.firstName || "Not provided",
@@ -210,26 +282,24 @@ onMounted(() => {
         nationality: parsedData.nationality || "Filipino",
         religion: parsedData.religion || "Not specified",
       };
-
-      console.log('📊 [DASHBOARD] Student data loaded:', student.value);
+      console.log("📊 [DASHBOARD] Student data loaded:", student.value);
     } catch (error) {
       console.error("❌ [DASHBOARD] Error parsing registration data:", error);
     }
   } else {
-    console.warn('⚠️ [DASHBOARD] No registration data found in localStorage');
+    console.warn("⚠️ [DASHBOARD] No registration data found in localStorage");
   }
 });
 
 onUnmounted(() => {
-  document.removeEventListener("click",clickOutside);
+  document.removeEventListener("click", handleClickOutside);
 });
 </script>
 
 <style scoped>
-/* ===== Header Bar ===== */
 .header-bar {
   width: 100%;
-  height: 100px;
+  height: 105px;
   background: #fff;
   border-bottom: 1px solid #e5e5e5;
   display: flex;
@@ -238,8 +308,8 @@ onUnmounted(() => {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 10;
-  padding: 0 24px;
+  z-index: 20;
+  padding: 0 30px;
   box-sizing: border-box;
   font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
 }
@@ -250,16 +320,33 @@ onUnmounted(() => {
   gap: 7px;
 }
 
+.header-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.portal-title {
+  font-size: 2rem;
+  font-weight: normal;
+  font-family: roboto;
+  color: #222;
+  padding-right: 20px;
+}
+
 .header-right {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 68px;
 }
 
 .header-item {
   font-size: 15px;
-  color: #555;
+  font-weight: 300;
   cursor: pointer;
+  color: black;
+  font-family: Tahoma, Arial, Verdana, 'Luxi Sans', Helvetica;
 }
 
 .hamburger {
@@ -289,10 +376,6 @@ onUnmounted(() => {
   align-items: center;
 }
 
-.logo-circle {
-  display: none;
-}
-
 .logo-img {
   margin-top: 20px;
   height: 100px;
@@ -301,7 +384,6 @@ onUnmounted(() => {
   object-fit: contain;
 }
 
-/* Account Dropdown */
 .account-dropdown {
   position: relative;
 }
@@ -360,7 +442,6 @@ onUnmounted(() => {
   border-bottom: 1px solid #eee;
 }
 
-/* ===== Global Dashboard Wrapper ===== */
 .page {
   font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
   background: #eee;
@@ -368,17 +449,11 @@ onUnmounted(() => {
   color: #000;
 }
 
-/* Remove old topbar */
-.topbar {
-  display: none;
-}
-
 .body {
   display: flex;
   margin-top: 90px;
 }
 
-/* ===== Sidebar ===== */
 .sidebar {
   width: 310px;
   background: #fff;
@@ -387,7 +462,7 @@ onUnmounted(() => {
   padding: 16px 12px 12px 12px;
   box-sizing: border-box;
   position: fixed;
-  top: 90px;
+  top: 95px;
   left: 0;
   z-index: 5;
   display: flex;
@@ -415,7 +490,7 @@ onUnmounted(() => {
 .sidebar-top {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 20px;
 }
 
 .search {
@@ -452,24 +527,11 @@ onUnmounted(() => {
   color: #000;
 }
 
-/* Sidebar collapsed (UI only, no logic) */
-.sidebar.collapsed {
-  width: 72px;
-}
-.sidebar.collapsed .menu-item {
-  font-size: 0;
-  padding: 8px 0;
-}
-.sidebar.collapsed .search {
-  display: none;
-}
-
-/* ===== Main Content ===== */
 .content {
   flex: 1;
-  padding: 18px 20px;
+  padding: 15px 25px;
   background: #eee;
-  margin-left: 260px;
+  margin-left: 310px;
   margin-top: 0;
   transition: margin-left 0.3s ease;
 }
@@ -478,19 +540,18 @@ onUnmounted(() => {
   margin-left: 0;
 }
 
-/* ===== Card & Student Info ===== */
 .card {
   width: 100%;
   background: #fff;
   border: 1px solid #dcdcdc;
   box-sizing: border-box;
-  margin-top: 25px;
+  margin-top: 15px;
 }
 
 .card-header {
   background: #333;
   color: #fff;
-  padding: 20px 50px;
+  padding: 10px 20px;
   font-weight: 600;
   font-size: 14px;
   letter-spacing: 0.5px;
@@ -501,7 +562,6 @@ onUnmounted(() => {
 .card-body {
   display: grid;
   grid-template-columns: 180px 1fr auto 1.2fr;
-  gap: 24px;
   padding: 24px;
   align-items: center;
 }
@@ -514,9 +574,15 @@ onUnmounted(() => {
 }
 
 .avatar {
-  width: 120px;
-  height: 120px;
+  width: 100%;
+  height: 100%;
+  max-width: 160px;
+  max-height: 160px;
+  margin-right: auto;
   background: #ccc;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
   border: 1px solid #bdbdbd;
   border-radius: 50%;
   display: block;
@@ -531,8 +597,9 @@ onUnmounted(() => {
 .student-name {
   font-weight: 700;
   font-size: 24px;
-  line-height: 1.3;
+  line-height: 1.2;
   color: #222;
+  margin-left: 25px;
   font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
 }
 
@@ -540,7 +607,9 @@ onUnmounted(() => {
   font-size: 40px;
   font-weight: bold;
   text-transform: capitalize;
-  font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
+  display: block;
+  line-height: 1;
+  margin-bottom: -25px;
 }
 
 .student-name .first-name,
@@ -552,24 +621,32 @@ onUnmounted(() => {
   padding-right: 10px;
 }
 
+.student-name.sidebar-collapsed .first-name,
+.student-name.sidebar-collapsed .middle-name {
+  display: inline;
+  padding-right: 5px;
+}
+
 .col-right {
   min-height: 120px;
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 10px;
 }
 
 .detail-row {
-  display: grid;
-  grid-template-columns: 140px 1fr;
-  gap: 10px;
-  font-size: 16px;
+  display: flex;
   align-items: center;
+  gap: 5px;
+  font-size: 16px;
 }
 
 .label {
   font-weight: 500;
   color: #222;
   font-size: 15px;
+  width: 140px;
+  display: flex;
 }
 
 .value {
@@ -578,27 +655,154 @@ onUnmounted(() => {
   font-size: 14px;
 }
 
-/* ===== Divider ===== */
 .divider {
   width: 1px;
   height: 160px;
   margin: 0 12px;
   border-left: 2px solid #aaa;
+  padding-right: 15px;
 }
 
-/* ===== Responsive Design ===== */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 20px;
+}
+
+.left-column {
+  width: 100%;
+}
+
+.right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.security-card {
+  min-height: 80px;
+}
+
+.security-body {
+  padding: 10px;
+  min-height: 30px;
+}
+
+.calendar-card {
+  border: 1px solid #dcdcdc;
+  background: #fff;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px 10px;
+  background: #333;
+  color: #fff;
+}
+
+.calendar-title {
+  font-size: 15px;
+  font-weight: 400;
+  font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
+}
+
+.calendar-nav {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 5px 10px;
+  font-weight: bold;
+}
+
+.calendar-nav:hover {
+  opacity: 0.7;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background: #fff;
+  padding: 8px;
+  gap: 0;
+}
+
+.calendar-day-header {
+  text-align: center;
+  font-weight: bold;
+  font-size: 12px;
+  padding: 10px 5px;
+  color: #0066cc;
+  font-family: Tahoma, Arial, sans-serif;
+  border: 1px solid #e0e0e0;
+  background: #f9f9f9;
+}
+
+.calendar-day-header.sunday {
+  color: #cc0000;
+}
+
+.calendar-day {
+  text-align: center;
+  padding: 12px 5px;
+  font-size: 13px;
+  color: #0066cc;
+  font-weight: 500;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e0e0e0;
+  background: #fff;
+  font-family: Tahoma, Arial, sans-serif;
+}
+
+.calendar-day.empty {
+  visibility: hidden;
+}
+
+.calendar-day.sunday {
+  color: #cc0000;
+}
+
+.calendar-day.today {
+  background: #0066cc;
+  color: #fff;
+  font-weight: bold;
+}
+
+.calendar-footer {
+  background: #333;
+  color: #fff;
+  padding: 15px 20px;
+}
+
+.event-title {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-family: Tahoma, Arial, sans-serif;
+}
+
+.event-content {
+  font-size: 12px;
+  color: #f0f0f0;
+  font-family: Tahoma, Arial, sans-serif;
+}
+
 @media (max-width: 900px) {
   .header-bar {
     height: auto;
     flex-wrap: wrap;
     padding: 12px;
   }
-
   .body {
     flex-direction: column;
     margin-top: 90px;
   }
-
   .sidebar {
     position: static;
     width: 100%;
@@ -608,25 +812,26 @@ onUnmounted(() => {
     border-right: none;
     border-bottom: 1px solid #e5e5e5;
   }
-
   .content {
     margin-left: 0;
     padding: 12px;
   }
-
   .card-body {
     grid-template-columns: 1fr;
     text-align: left;
   }
-
-  .student-details {
-    border-left: 0;
-    padding-left: 0;
-  }
-
   .account-menu {
     right: auto;
     left: 0;
+  }
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+  .right-column {
+    order: 2;
+  }
+  .divider {
+    display: none;
   }
 }
 </style>
