@@ -4,7 +4,11 @@
     <!-- Top Header Bar -->
     <header class="header-bar">
       <div class="header-left">
-        <div class="hamburger" @click="toggleSidebar">☰</div>
+        <div class="hamburger" @click="toggleSidebar" aria-label="Toggle sidebar">
+          <span class="burger-bar"></span>
+          <span class="burger-bar"></span>
+          <span class="burger-bar"></span>
+        </div>
         <div class="logo">
           <img class="logo-img" :src="hauLogo" alt="HAU logo" />
         </div>
@@ -217,7 +221,7 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  document.removeEventListener("click", handleClickOutside);
+  document.removeEventListener("click",clickOutside);
 });
 </script>
 
@@ -243,7 +247,7 @@ onUnmounted(() => {
 .header-left {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 7px;
 }
 
 .header-right {
@@ -258,17 +262,26 @@ onUnmounted(() => {
   cursor: pointer;
 }
 
-/* Hamburger in header */
 .hamburger {
-  font-size: 22px;
   cursor: pointer;
   user-select: none;
-  padding: 8px;
-  transition: transform 0.2s ease;
+  padding: 15px 10px;
+  margin: 15px 0;
+  margin-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: slategrey;
 }
 
 .hamburger:hover {
-  transform: scale(1.1);
+  color: #000;
+}
+
+.burger-bar {
+  width: 26px;
+  height: 4px;
+  background: currentColor;
 }
 
 .logo {
@@ -367,7 +380,7 @@ onUnmounted(() => {
 
 /* ===== Sidebar ===== */
 .sidebar {
-  width: 260px;
+  width: 310px;
   background: #fff;
   border-right: 1px solid #e5e5e5;
   min-height: calc(100vh - 90px);
@@ -417,17 +430,18 @@ onUnmounted(() => {
 .menu {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .menu-item {
-  font-weight: 700;
-  font-size: 14px;
-  color: #555;
+  font-weight: bold;
+  font-size: 15px;
+  color: #000000;
   text-align: left;
-  padding: 8px 0;
+  padding: 6px 0;
   cursor: pointer;
   transition: color 0.2s ease;
+  font-family: Tahoma, Arial, Verdana, 'Luxi Sans', Helvetica;
 }
 
 .menu-item:hover {
