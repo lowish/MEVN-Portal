@@ -30,13 +30,13 @@
               <input
                 v-model="loginData.password"
                 type="password"
-                placeholder="password"
+                placeholder="password..."
                 class="input-field password-field"
                 required
               />
             </div>
             <button type="submit" :disabled="loading" class="login-button">
-              {{ loading ? 'Logging in...' : 'Login' }}
+              {{ loading ? 'Login' : 'Login' }}
             </button>
           </form>
 
@@ -277,7 +277,6 @@ export default {
   border-radius: 6px;
   font-size: 0.8rem;
   cursor: pointer;
-  transition: all 0.5s ease;
   text-transform: capitalize;
 }
 
@@ -287,13 +286,13 @@ export default {
 }
 
 .login-button:hover {
-  background: #f8f8f8;
+  background: #710e1d;
+  color: #ffffff;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.login-button:active {
-  transform: translateY(0);
+  text-decoration-color: #ddd;
+  border-color: #ffffff;
+  border: 2px solid #ffffff;
 }
 
 .message {
