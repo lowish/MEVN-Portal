@@ -96,6 +96,17 @@
                 </div>
               </div>
             </section>
+
+            <section class="card schedule-card">
+              <div class="card-header">Class Schedule</div>
+              <div class="schedule-body">
+                <div class="schedule-top">
+                  <span class="schedule-label">Class Schedule for:</span>
+                  <span class="schedule-term">SY 2025-2026, 1st / 2nd term</span>
+                </div>
+                <div class="schedule-empty">No class schedule</div>
+              </div>
+            </section>
           </div>
 
           <!-- Right Column: Calendar and Account Security -->
@@ -145,6 +156,10 @@
         </div>
       </main>
     </div>
+
+    <footer class="page-footer" :class="{ 'sidebar-collapsed': sidebarCollapsed }">
+      All rights reserved, © 2020 DATAMOBILITY Corporation Philippines. Unit 1103, 11th Floor, Galleria Corporate Center, EDSA cor. Ortigas Ave. Ugong Norte Quezon City Telephone: (02) 914-2960
+    </footer>
   </div>
 </template>
 
@@ -260,35 +275,44 @@ const nextMonth = () => {
   currentDate.value = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth() + 1, 1);
 };
 
+const loadStudentFromStorage = () => {
+  const registrationDataRaw = localStorage.getItem("registrationData");
+  const userDataRaw = localStorage.getItem("user");
+  const sourceRaw = registrationDataRaw || userDataRaw;
+
+  if (!sourceRaw) {
+    console.warn("⚠️ [DASHBOARD] No registration/user data found in localStorage");
+    return;
+  }
+
+  try {
+    const parsedData = JSON.parse(sourceRaw);
+    const nameParts = parseFullName(parsedData.fullName || parsedData.name || "");
+    const studentNumber =
+      parsedData.studentNumber ||
+      localStorage.getItem("studentNumber") ||
+      `HAU${Date.now().toString().slice(-8)}`;
+
+    student.value = {
+      lastName: nameParts.lastName || "Not provided",
+      firstName: nameParts.firstName || "Not provided",
+      middleName: nameParts.middleName || "",
+      studentNumber,
+      gender: parsedData.gender || "Not specified",
+      birthDate: parsedData.birthDate || "Not specified",
+      nationality: parsedData.nationality || "Filipino",
+      religion: parsedData.religion || "Not specified",
+    };
+
+    console.log("📊 [DASHBOARD] Student data loaded:", student.value);
+  } catch (error) {
+    console.error("❌ [DASHBOARD] Error parsing stored data:", error);
+  }
+};
+
 onMounted(() => {
   document.addEventListener("click", handleClickOutside);
-  const registrationData = localStorage.getItem("registrationData");
-  console.log("📂 [DASHBOARD] Checking for registration data...");
-  if (registrationData) {
-    try {
-      const parsedData = JSON.parse(registrationData);
-      console.log("✅ [DASHBOARD] Registration data found:", parsedData);
-      const nameParts = parseFullName(parsedData.fullName || "");
-      const studentNumber = parsedData.studentNumber || 
-                           localStorage.getItem("studentNumber") ||
-                           `HAU${Date.now().toString().slice(-8)}`;
-      student.value = {
-        lastName: nameParts.lastName || "Not provided",
-        firstName: nameParts.firstName || "Not provided",
-        middleName: nameParts.middleName || "",
-        studentNumber: studentNumber,
-        gender: parsedData.gender || "Not specified",
-        birthDate: parsedData.birthDate || "Not specified",
-        nationality: parsedData.nationality || "Filipino",
-        religion: parsedData.religion || "Not specified",
-      };
-      console.log("📊 [DASHBOARD] Student data loaded:", student.value);
-    } catch (error) {
-      console.error("❌ [DASHBOARD] Error parsing registration data:", error);
-    }
-  } else {
-    console.warn("⚠️ [DASHBOARD] No registration data found in localStorage");
-  }
+  loadStudentFromStorage();
 });
 
 onUnmounted(() => {
@@ -447,6 +471,7 @@ onUnmounted(() => {
   background: #eee;
   min-height: 100vh;
   color: #000;
+  padding-bottom: 52px;
 }
 
 .body {
@@ -599,7 +624,7 @@ onUnmounted(() => {
   font-size: 24px;
   line-height: 1.2;
   color: #222;
-  margin-left: 25px;
+  margin-left: 15px;
   font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
 }
 
@@ -607,24 +632,32 @@ onUnmounted(() => {
   font-size: 40px;
   font-weight: bold;
   text-transform: capitalize;
-  display: block;
-  line-height: 1;
+  display: flex;
+  line-height: 0.9;
   margin-bottom: -25px;
 }
+.student-name .first-name{
+  font-size: 21px;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
+  padding-right: 120px;
+}
 
-.student-name .first-name,
 .student-name .middle-name {
   font-size: 20px;
   font-weight: 500;
   text-transform: uppercase;
   font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
-  padding-right: 10px;
+  padding-right: 4px;
+  display: flex;
 }
 
 .student-name.sidebar-collapsed .first-name,
 .student-name.sidebar-collapsed .middle-name {
-  display: inline;
-  padding-right: 5px;
+  display: inline-flex;
+  align-items: center;
+  padding-right: 4px;
 }
 
 .col-right {
@@ -726,17 +759,16 @@ onUnmounted(() => {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   background: #fff;
-  padding: 8px;
   gap: 0;
 }
 
 .calendar-day-header {
   text-align: center;
-  font-weight: bold;
-  font-size: 12px;
-  padding: 10px 5px;
+  font-weight: normal;
+  font-size: 13px;
+  padding: 5px 5px;
   color: #0066cc;
-  font-family: Tahoma, Arial, sans-serif;
+  font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
   border: 1px solid #e0e0e0;
   background: #f9f9f9;
 }
@@ -747,11 +779,11 @@ onUnmounted(() => {
 
 .calendar-day {
   text-align: center;
-  padding: 12px 5px;
+  padding: 6px 6px;
   font-size: 13px;
-  color: #0066cc;
+  color: #000000;
   font-weight: 500;
-  min-height: 40px;
+  min-height: 5px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -775,22 +807,89 @@ onUnmounted(() => {
 }
 
 .calendar-footer {
-  background: #333;
-  color: #fff;
-  padding: 15px 20px;
+  background: #fff;
+  color: #000;
+  padding: 0;
+  border: 1px solid #bfbfbf;
+  border-top: none;
 }
 
 .event-title {
   font-size: 13px;
-  font-weight: 600;
-  margin-bottom: 8px;
-  font-family: Tahoma, Arial, sans-serif;
+  margin: 0;
+  padding: 8px 12px;
+  background: #333;
+  color: #fff;
+  font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
 }
 
 .event-content {
-  font-size: 12px;
-  color: #f0f0f0;
+  font-size: 14px;
+  color: #000;
+  font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
+  padding: 8px 12px;
+  background: #fff;
+  border-top: 1px solid #bfbfbf;
+  display: flex;
+}
+
+.schedule-card {
+  margin-top: 15px;
+}
+
+.schedule-body {
+  padding: 16px 20px 14px;
+  background: #fff;
+}
+
+.schedule-top {
+  display: flex;
+  gap: 70px;
+  font-size: 13px;
+  color: #222;
+  margin-bottom: 20px;
+  font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
+}
+
+.schedule-label {
+  min-width: 160px;
+  text-align: left;
+}
+
+.schedule-term {
+  font-weight: 600;
+  color: #aaa;
+  font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
+}
+
+.schedule-empty {
+  text-align: center;
+  font-size: 14px;
+  color: #333;
+  padding: 80px 0;
+  border-top: 1px solid #dcdcdc;
   font-family: Tahoma, Arial, sans-serif;
+}
+
+.page-footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 30;
+  background: #333;
+  color: #aaa;
+  text-align: center;
+  padding: 20px 24px 25px;
+  font-size: 8pt;
+  line-height: normal;
+  font-family: Tahoma, Arial, sans-serif;
+  margin-left: 310px;
+  transition: margin-left 0.3s ease;
+}
+
+.page-footer.sidebar-collapsed {
+  margin-left: 0;
 }
 
 @media (max-width: 900px) {
