@@ -501,108 +501,96 @@ export default {
 
       this.loading = true;
 
-      // Create clean payload
       const registrationPayload = {
         fullName: this.formData.fullName.trim(),
         birthDate: this.formData.birthDate || null,
         gender: this.formData.gender || '',
         religion: this.formData.religion || '',
+        nationality: 'Filipino',
         email: this.formData.email.trim().toLowerCase(),
         mobile: this.formData.mobile || '',
         address: this.formData.address || '',
         course: this.formData.course.trim(),
         yearLevel: this.formData.yearLevel || '',
-        password: this.formData.password,
-        confirmPassword: this.formData.confirmPassword,
-        agreeTerms: this.formData.agreeTerms
+        password: this.formData.password
       };
 
-      console.log('📝 [REGISTER] Submitting registration request');
-      console.log('🔗 [REGISTER] Endpoint:', REGISTER_ENDPOINT);
-      console.log('📦 [REGISTER] Payload:', {
-        fullName: registrationPayload.fullName,
-        email: registrationPayload.email,
-        password: '***'
-      });
+      console.log('📝 [REGISTER] Submitting:', registrationPayload);
 
       try {
-        // Make POST request with explicit configuration
-        const response = await axios({
-          method: 'POST',
-          url: REGISTER_ENDPOINT,
-          data: registrationPayload,
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
+        const response = await axios.post(REGISTER_ENDPOINT, registrationPayload);
 
-        console.log('✅ [REGISTER] Registration successful');
-        console.log('📥 [REGISTER] Response:', response.data);
+        console.log('✅ [REGISTER] Success:', response.data);
 
-        this.successMessage = response.data.message;
+        this.successMessage = response.data.message || 'Registration successful!';
         this.registrationData = response.data.data;
 
-        // Store registration data in localStorage for Student Dashboard
         const dataToStore = {
           fullName: registrationPayload.fullName,
-          birthDate: this.formatDateForDisplay(registrationPayload.birthDate),
+          birthDate: registrationPayload.birthDate,
           gender: registrationPayload.gender,
           religion: registrationPayload.religion,
+          nationality: registrationPayload.nationality,
           email: registrationPayload.email,
           mobile: registrationPayload.mobile,
           address: registrationPayload.address,
           course: registrationPayload.course,
           yearLevel: registrationPayload.yearLevel,
-          studentNumber: response.data.data.studentNumber || this.generateStudentNumber(),
+          studentNumber: response.data.data?.studentNumber || `HAU${Date.now().toString().slice(-8)}`,
           registeredAt: new Date().toISOString()
         };
 
-        console.log('💾 [REGISTER] Storing registration data:', dataToStore);
         localStorage.setItem('registrationData', JSON.stringify(dataToStore));
         localStorage.setItem('studentNumber', dataToStore.studentNumber);
-        localStorage.setItem('userEmail', registrationPayload.email);
 
-        // Reset form
-        this.formData = {
-          fullName: '',
-          birthDate: '',
-          gender: '',
-          religion: '',
-          email: '',
-          mobile: '',
-          address: '',
-          course: '',
-          yearLevel: '',
-          password: '',
-          confirmPassword: '',
-          agreeTerms: false
-        };
-
-        // Reset field errors
-        this.fieldErrors = {
-          fullName: '',
-          email: '',
-          course: '',
-          password: '',
-          confirmPassword: '',
-          agreeTerms: ''
-        };
-
-        // Start countdown and redirect to dashboard
+        this.resetForm();
         this.startRedirectCountdown();
 
       } catch (error) {
-        console.error('❌ [REGISTER] Registration failed');
-        console.error('🔍 [REGISTER] Full error:', error);
-
-        this.errorMessage = this.getErrorMessage(error);
+        console.error('❌ [REGISTER] Error:', error);
+        
+        if (error.response?.status === 500) {
+          this.errorMessage = `Server error: ${error.response.data?.message || 'Internal server error'}. Check backend logs.`;
+        } else if (error.response?.data?.message) {
+          this.errorMessage = error.response.data.message;
+        } else if (error.message) {
+          this.errorMessage = error.message;
+        } else {
+          this.errorMessage = 'Registration failed. Please try again.';
+        }
       } finally {
         this.loading = false;
       }
     },
 
+    resetForm() {
+      this.formData = {
+        fullName: '',
+        birthDate: '',
+        gender: '',
+        religion: '',
+        email: '',
+        mobile: '',
+        address: '',
+        course: '',
+        yearLevel: '',
+        password: '',
+        confirmPassword: '',
+        agreeTerms: false
+      };
+
+      this.fieldErrors = {
+        fullName: '',
+        email: '',
+        course: '',
+        password: '',
+        confirmPassword: '',
+        agreeTerms: ''
+      };
+    },
+
     startRedirectCountdown() {
-      this.redirectCountdown = 5;
+      this.redirectCountdown = 30;
 
       if (this.countdownInterval) {
         clearInterval(this.countdownInterval);
@@ -616,7 +604,7 @@ export default {
           clearInterval(this.countdownInterval);
           console.log('🎯 [REGISTER] Redirecting to student dashboard');
           // Redirect to Student Dashboard instead of login
-          this.$router.push('/student-dashboard');
+          this.$router.push('/dashboard');
         }
       }, 1000);
     },
