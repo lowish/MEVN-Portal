@@ -571,14 +571,15 @@ onUnmounted(() => {
   border: 1px solid #dcdcdc;
   box-sizing: border-box;
   margin-top: 15px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .card-header {
   background: #333;
   color: #fff;
-  padding: 10px 20px;
+  padding: 7px 18px;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 13px;
   letter-spacing: 0.5px;
   text-align: left;
   font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
@@ -587,7 +588,7 @@ onUnmounted(() => {
 .card-body {
   display: grid;
   grid-template-columns: 180px 1fr auto 1.2fr;
-  padding: 24px;
+  padding: 20px;
   align-items: center;
 }
 
@@ -677,13 +678,13 @@ onUnmounted(() => {
 .label {
   font-weight: 500;
   color: #222;
-  font-size: 15px;
+  font-size: 14px;
   width: 140px;
   display: flex;
 }
 
 .value {
-  font-weight: 700;
+  font-weight: 600;
   color: gray;
   font-size: 14px;
 }
@@ -698,7 +699,7 @@ onUnmounted(() => {
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns: 1fr 350px;
+  grid-template-columns: 1fr 275px;
   gap: 20px;
 }
 
@@ -710,6 +711,7 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   gap: 9px;
+  width: 280px;
 }
 
 .security-card {
