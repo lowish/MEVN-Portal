@@ -14,9 +14,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Database connection
-const MONGO_URI = process.env.MONGO_URI_STUDENT_PORTAL || 'mongodb://localhost:27017/student_portal';
+const MONGO_URI = process.env.MONGO_URI_ATLAS || 'mongodb+srv://lowishxx_db_user:L7oC1P4RNEbJ4PyO@cluster0.kxiuyrc.mongodb.net/?appName=Cluster0';
 mongoose.connect(MONGO_URI)
-  .then(() => console.log('✅ MongoDB connected to student_portal'))
+  .then(() => console.log('✅ MongoDB connected to lowishxx_db_user'))
   .catch(err => {
     console.error('❌ MongoDB connection error:', err.message);
     process.exit(1);

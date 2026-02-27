@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const connectDB = async () => {
   try {
     // Remove deprecated options
-    const conn = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/student_portal');
+    const conn = await mongoose.connect(process.env.MONGO_URI_ATLAS || 'mongodb+srv://lowishxx_db_user:L7oC1P4RNEbJ4PyO@cluster0.kxiuyrc.mongodb.net/?appName=Cluster0');
 
     console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
     console.log(`📦 Database: ${conn.connection.name}`);

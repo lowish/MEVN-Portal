@@ -33,17 +33,50 @@
       <!-- Sidebar starts below header, fixed position -->
       <aside class="sidebar" :class="{ collapsed: sidebarCollapsed }">
         <div class="sidebar-top">
-          <input class="search" type="text" placeholder="Search" />
+          <input
+            v-model="searchQuery"
+            class="search"
+            type="text"
+            placeholder="Search"
+          />
         </div>
         <nav class="menu">
-          <div class="menu-item">Accounts Receivable</div>
-          <div class="menu-item active">Student Information</div>
-          <div class="menu-item">Enrollment Support</div>
-          <div class="menu-item">Student Services</div>
-          <div class="menu-item">Student Performance</div>
-          <div class="menu-item">Library Support</div>
-          <div class="menu-item">Question / Contribution Management</div>
-          <div class="menu-item">Utilities</div>
+          <div
+            v-for="item in filteredMenuItems"
+            :key="item.label"
+            class="menu-group"
+          >
+            <button
+              type="button"
+              class="menu-item"
+              :class="{ active: activeMenu === item.label }"
+              @click="toggleMenu(item.label)"
+            >
+              <span class="menu-label">{{ item.label }}</span>
+            </button>
+            <transition
+              name="submenu-slide"
+              @before-enter="onBeforeEnter"
+              @enter="onEnter"
+              @after-enter="onAfterEnter"
+              @before-leave="onBeforeLeave"
+              @leave="onLeave"
+              @after-leave="onAfterLeave"
+            >
+              <div
+                v-if="activeMenu === item.label || item.autoOpen"
+                class="submenu"
+              >
+                <div
+                  v-for="subItem in item.subItems"
+                  :key="subItem"
+                  class="submenu-item"
+                >
+                  {{ subItem }}
+                </div>
+              </div>
+            </transition>
+          </div>
         </nav>
       </aside>
 
@@ -174,6 +207,8 @@ const router = useRouter();
 const showAccountMenu = ref(false);
 const accountDropdownRef = ref(null);
 const sidebarCollapsed = ref(false);
+const activeMenu = ref(null);
+const searchQuery = ref("");
 
 const toggleSidebar = () => {
   sidebarCollapsed.value = !sidebarCollapsed.value;
@@ -181,6 +216,49 @@ const toggleSidebar = () => {
 
 const toggleAccountMenu = () => {
   showAccountMenu.value = !showAccountMenu.value;
+};
+
+const toggleMenu = (label) => {
+  activeMenu.value = activeMenu.value === label ? null : label;
+};
+
+const onBeforeEnter = (el) => {
+  el.style.height = "0";
+  el.style.opacity = "0";
+};
+
+const onEnter = (el) => {
+  const height = el.scrollHeight;
+  el.style.transition = "height 0.2s ease, opacity 0.2s ease";
+  requestAnimationFrame(() => {
+    el.style.height = `${height}px`;
+    el.style.opacity = "1";
+  });
+};
+
+const onAfterEnter = (el) => {
+  el.style.height = "auto";
+  el.style.opacity = "";
+  el.style.transition = "";
+};
+
+const onBeforeLeave = (el) => {
+  el.style.height = `${el.scrollHeight}px`;
+  el.style.opacity = "1";
+};
+
+const onLeave = (el) => {
+  el.style.transition = "height 0.2s ease, opacity 0.2s ease";
+  requestAnimationFrame(() => {
+    el.style.height = "0";
+    el.style.opacity = "0";
+  });
+};
+
+const onAfterLeave = (el) => {
+  el.style.height = "";
+  el.style.opacity = "";
+  el.style.transition = "";
 };
 
 const closeAccountMenu = () => {
@@ -222,6 +300,67 @@ const parseFullName = (fullName) => {
   const middleName = nameParts.slice(1, -1).join(" ");
   return { lastName, firstName, middleName };
 };
+
+const menuItems = [
+  {
+    label: "Accounts Receivable",
+    subItems: ["Payment Report", "Online Payment Center"],
+  },
+  {
+    label: "Student Information",
+    subItems: ["Student Profile", "View Student Ledger of Accounts"],
+  },
+  {
+    label: "Enrollment Support",
+    subItems: ["College Self Enrollment"],
+  },
+  {
+    label: "Student Services",
+    subItems: ["Faculty Performance Evaluation"],
+  },
+  {
+    label: "Student Performance",
+    subItems: ["Display Own Grades"],
+  },
+  {
+    label: "Library Support",
+    subItems: ["Online Public Access Catalog"],
+  },
+  {
+    label: "Question/Contribution Management",
+    subItems: ["Online Examination"],
+  },
+  {
+    label: "Utilities",
+    subItems: ["Change Own Password"],
+  },
+];
+
+const filteredMenuItems = computed(() => {
+  const query = searchQuery.value.trim().toLowerCase();
+  if (!query) {
+    return menuItems.map((item) => ({ ...item, autoOpen: false }));
+  }
+
+  return menuItems
+    .map((item) => {
+      const labelMatch = item.label.toLowerCase().includes(query);
+      const matchedSubItems = item.subItems.filter((subItem) =>
+        subItem.toLowerCase().includes(query)
+      );
+
+      if (!labelMatch && matchedSubItems.length === 0) {
+        return null;
+      }
+
+      return {
+        ...item,
+        subItems: labelMatch ? item.subItems : matchedSubItems,
+        autoOpen: true,
+      };
+    })
+    .filter(Boolean);
+});
 
 const student = ref({
   lastName: "Doe",
@@ -323,7 +462,7 @@ onUnmounted(() => {
 <style scoped>
 .header-bar {
   width: 100%;
-  height: 105px;
+  height: 125px;
   background: #fff;
   border-bottom: 1px solid #e5e5e5;
   display: flex;
@@ -336,6 +475,7 @@ onUnmounted(() => {
   padding: 0 30px;
   box-sizing: border-box;
   font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
+  overflow: visible;
 }
 
 .header-left {
@@ -356,7 +496,7 @@ onUnmounted(() => {
   font-weight: normal;
   font-family: roboto;
   color: #222;
-  padding-right: 20px;
+  padding-right: 100px;
 }
 
 .header-right {
@@ -401,9 +541,9 @@ onUnmounted(() => {
 }
 
 .logo-img {
-  margin-top: 20px;
-  height: 100px;
-  max-height: 100px;
+  margin-top: 0;
+  height: 90px;
+  max-height: 90px;
   width: 240px;
   object-fit: contain;
 }
@@ -476,25 +616,25 @@ onUnmounted(() => {
 
 .body {
   display: flex;
-  margin-top: 90px;
+  margin-top: 125px;
 }
 
 .sidebar {
   width: 310px;
   background: #fff;
   border-right: 1px solid #e5e5e5;
-  min-height: calc(100vh - 90px);
+  min-height: calc(100vh - 125px);
   padding: 16px 12px 12px 12px;
   box-sizing: border-box;
   position: fixed;
-  top: 95px;
+  top: 125px;
   left: 0;
-  z-index: 5;
+  z-index: 30;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 90px);
+  height: calc(100vh - 125px);
   overflow-y: auto;
-  transition: width 0.3s ease, margin-left 0.3s ease;
+  transition: width 0.2s ease, margin-left 0.2s ease;
 }
 
 .sidebar.collapsed {
@@ -506,6 +646,10 @@ onUnmounted(() => {
 
 .sidebar.collapsed .menu-item {
   font-size: 0;
+}
+
+.sidebar.collapsed .submenu {
+  display: none;
 }
 
 .sidebar.collapsed .search {
@@ -521,35 +665,78 @@ onUnmounted(() => {
 .search {
   padding: 8px;
   border: 1px solid #cfcfcf;
-  font-size: 14px;
+  font-size: 12px;
   border-radius: 4px;
-  margin-bottom: 18px;
+  margin-bottom: 5px;
   transition: opacity 0.3s ease;
 }
 
 .menu {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 9px;
+}
+
+.menu-group {
+  display: flex;
+  flex-direction: column;
 }
 
 .menu-item {
-  font-weight: bold;
-  font-size: 15px;
+  background: none;
+  border: none;
+  width: 100%;
+  font-weight: 600;
+  font-size: 15.5px;
   color: #000000;
   text-align: left;
-  padding: 6px 0;
+  padding: 6px 0 4px;
   cursor: pointer;
   transition: color 0.2s ease;
   font-family: Tahoma, Arial, Verdana, 'Luxi Sans', Helvetica;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 .menu-item:hover {
   color: #333;
+  background-color: rgba(132, 124, 124, 0.175);
+  cursor: pointer;
 }
 
 .menu-item.active {
   color: #000;
+}
+
+
+.menu-label {
+  flex: 1;
+}
+
+.submenu {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 9px 0px 9px 10px;
+  overflow: hidden;
+}
+
+.submenu-item {
+  font-size: 16px;
+  color: #000;
+  cursor: pointer;
+  padding: 3.5px 0;
+  font-family: Tahoma, Arial, Verdana, 'Luxi Sans', Helvetica;
+}
+
+.submenu-item:hover {
+  color: #000;
+}
+
+.submenu-slide-enter-active,
+.submenu-slide-leave-active {
+  overflow: hidden;
 }
 
 .content {
@@ -602,8 +789,9 @@ onUnmounted(() => {
 .avatar {
   width: 100%;
   height: 100%;
-  max-width: 160px;
-  max-height: 160px;
+  max-width: 150px;
+  max-height: 155px;
+  padding: -10px 10px;
   margin-right: auto;
   background: #ccc;
   background-position: center;
@@ -902,7 +1090,7 @@ onUnmounted(() => {
   }
   .body {
     flex-direction: column;
-    margin-top: 90px;
+    margin-top: 125px;
   }
   .sidebar {
     position: static;
