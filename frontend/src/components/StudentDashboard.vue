@@ -202,6 +202,12 @@ import { useRouter } from "vue-router";
 import hauLogo from "../assets/dashboardlogo.png";
 import studentPfp from "../assets/studentpfp.png";
 
+// Development logging helper
+const isDev = import.meta.env.DEV;
+const devLog = (...args) => {
+  if (isDev) console.log(...args);
+};
+
 const router = useRouter();
 
 const showAccountMenu = ref(false);
@@ -266,12 +272,12 @@ const closeAccountMenu = () => {
 };
 
 const viewProfile = () => {
-  console.log("View Profile clicked");
+  devLog("👤 [DASHBOARD] View Profile action triggered");
   closeAccountMenu();
 };
 
 const logout = () => {
-  console.log("Logout clicked");
+  devLog("🚪 [DASHBOARD] Logout action triggered");
   closeAccountMenu();
   localStorage.removeItem("authToken");
   localStorage.removeItem("user");
@@ -363,14 +369,14 @@ const filteredMenuItems = computed(() => {
 });
 
 const student = ref({
-  lastName: "Doe",
-  firstName: "John",
-  middleName: "Smith",
-  studentNumber: "00000001",
-  gender: "Male",
-  birthDate: "July 02, 2007",
+  lastName: "Loading...",
+  firstName: "",
+  middleName: "",
+  studentNumber: "Loading...",
+  gender: "Loading...",
+  birthDate: "Loading...",
   nationality: "Filipino",
-  religion: "Catholic",
+  religion: "Loading...",
 });
 
 const currentDate = ref(new Date());
@@ -420,7 +426,7 @@ const loadStudentFromStorage = () => {
   const sourceRaw = registrationDataRaw || userDataRaw;
 
   if (!sourceRaw) {
-    console.warn("⚠️ [DASHBOARD] No registration/user data found in localStorage");
+    devLog("⚠️ [DASHBOARD] No student data found in storage");
     return;
   }
 
@@ -436,16 +442,16 @@ const loadStudentFromStorage = () => {
       lastName: nameParts.lastName || "Not provided",
       firstName: nameParts.firstName || "Not provided",
       middleName: nameParts.middleName || "",
-      studentNumber,
-      gender: parsedData.gender || "Not specified",
-      birthDate: parsedData.birthDate || "Not specified",
-      nationality: parsedData.nationality || "Filipino",
-      religion: parsedData.religion || "Not specified",
+      studentNumber: parsedData.studentNumber || "N/A",  // ✓ Loaded
+      gender: parsedData.gender || "N/A",                // ✓ Loaded
+      birthDate: parsedData.birthDate || "N/A",          // ✓ Loaded
+      nationality: "Filipino",                  // ✓ Hardcoded
+      religion: parsedData.religion || "N/A",  // ✓ Loaded
     };
 
-    console.log("📊 [DASHBOARD] Student data loaded:", student.value);
+    devLog("📊 [DASHBOARD] Student data loaded successfully");
   } catch (error) {
-    console.error("❌ [DASHBOARD] Error parsing stored data:", error);
+    devLog("❌ [DASHBOARD] Error loading student data:", error.message);
   }
 };
 

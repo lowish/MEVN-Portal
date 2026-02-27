@@ -237,30 +237,24 @@
           </div>
 
           <!-- Success Message -->
-          <div v-if="successMessage" class="alert alert-success">
-            <span class="alert-icon">✅</span>
-            <div class="alert-content">
-              <p>{{ successMessage }}</p>
-              <div v-if="registrationData" class="credentials-display">
-                <h4>Your Login Credentials:</h4>
-                <p class="credential-item">
-                  <strong>Student Number:</strong>
-                  <code class="credential-code">{{ registrationData.studentNumber }}</code>
-                  <button 
-                    type="button" 
-                    class="copy-btn" 
-                    @click="copyToClipboard(registrationData.studentNumber)"
-                    title="Copy to clipboard"
-                  >
-                    <FontAwesomeIcon :icon="['fas', 'clipboard']" />
-                  </button>
-                </p>
-                <p class="warning-text">
-                  <FontAwesomeIcon :icon="['fas', 'triangle-exclamation']" />
-                  Please save your student number. Redirecting to login in <strong>{{ redirectCountdown }}</strong> seconds...
-                </p>
-              </div>
-            </div>
+          <div v-if="registrationData" class="credentials-display">
+            <h4>Your Login Credentials:</h4>
+            <p class="credential-item">
+              <strong>Student Number:</strong>
+              <code class="credential-code">{{ registrationData.studentNumber }}</code>
+              <button 
+                type="button" 
+                class="copy-btn" 
+                @click="copyToClipboard(registrationData.studentNumber)"
+                title="Copy to clipboard"
+              >
+                <FontAwesomeIcon :icon="['fas', 'clipboard']" />
+              </button>
+            </p>
+            <p class="warning-text">
+              <FontAwesomeIcon :icon="['fas', 'triangle-exclamation']" />
+              Please save your student number. Redirecting to login in <strong>{{ redirectCountdown }}</strong> seconds...
+            </p>
           </div>
 
           <!-- Submit Button -->
@@ -321,6 +315,12 @@ const REGISTER_ENDPOINT = `${API_BASE_URL.replace(/\/$/, '')}${REGISTER_PATH.sta
 // Set axios defaults
 axios.defaults.timeout = 10000;
 axios.defaults.headers.post['Content-Type'] = 'application/json';
+
+// Development logging helper
+const isDev = import.meta.env.DEV;
+const devLog = (...args) => {
+  if (isDev) console.log(...args);
+};
 
 export default {
   name: 'Register',
@@ -515,12 +515,17 @@ export default {
         password: this.formData.password
       };
 
-      console.log('📝 [REGISTER] Submitting:', registrationPayload);
+      devLog('Submitting registration:', {
+        course: registrationPayload.course,
+        yearLevel: registrationPayload.yearLevel,
+        hasPassword: !!registrationPayload.password,
+        timestamp: new Date().toISOString()
+      });
 
       try {
         const response = await axios.post(REGISTER_ENDPOINT, registrationPayload);
 
-        console.log('✅ [REGISTER] Success:', response.data);
+        devLog('Registration successful');
 
         this.successMessage = response.data.message || 'Registration successful!';
         this.registrationData = response.data.data;
@@ -547,7 +552,10 @@ export default {
         this.startRedirectCountdown();
 
       } catch (error) {
-        console.error('❌ [REGISTER] Error:', error);
+        devLog('Registration failed:', {
+          status: error.response?.status,
+          message: error.response?.data?.message || error.message
+        });
         
         if (error.response?.status === 500) {
           this.errorMessage = `Server error: ${error.response.data?.message || 'Internal server error'}. Check backend logs.`;
@@ -598,13 +606,12 @@ export default {
 
       this.countdownInterval = setInterval(() => {
         this.redirectCountdown--;
-        console.log(`🔄 [REGISTER] Redirecting in ${this.redirectCountdown} seconds...`);
 
         if (this.redirectCountdown <= 0) {
           clearInterval(this.countdownInterval);
-          console.log('🎯 [REGISTER] Redirecting to student dashboard');
+          devLog('Redirecting to login');
           // Redirect to Student Dashboard instead of login
-          this.$router.push('/dashboard');
+          this.$router.push('/login');
         }
       }, 1000);
     },
@@ -627,9 +634,8 @@ export default {
     copyToClipboard(text) {
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(text).then(() => {
-          console.log('📋 [REGISTER] Copied to clipboard:', text);
         }).catch(err => {
-          console.error('Failed to copy:', err);
+          devLog('❌ [REGISTER] Failed to copy to clipboard');
         });
       } else {
         // Fallback for older browsers
@@ -639,7 +645,7 @@ export default {
         textArea.select();
         document.execCommand('copy');
         document.body.removeChild(textArea);
-        console.log('📋 [REGISTER] Copied to clipboard:', text);
+        devLog('Student number copied to clipboard');
       }
     }
   }
@@ -799,14 +805,14 @@ select.input-field {
 
 .alert-error {
   background: #fee;
-  border: 1px solid #fca5a5;
-  color: #dc2626;
+  border: 1px solid #830e2b;
+  color: #830e2b;
 }
 
 .alert-success {
-  background: #830e2b;
-  border: 1px solid #ffffff;
-  color: #ffffff;
+  background: #fee;
+  border: 1px solid #830e2b;
+  color: #000000;
 }
 
 .credentials-display {
