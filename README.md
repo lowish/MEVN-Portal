@@ -1,5 +1,5 @@
 # Vue 3 + Vite
-## Login page preview
+## Campus ++ HAU
 <p align="center">
   <img src="./frontend/src/assets/Preview1.jpg" alt="Login UI HAU Portal" width="1100" />
 </p>
