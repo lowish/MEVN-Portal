@@ -5,16 +5,6 @@ import vue from '@vitejs/plugin-vue'
 export default defineConfig({
   plugins: [vue()],
   build: {
-    outDir: 'dist',
-    sourcemap: false,
-    minify: 'terser'
-  },
-  server: {
-    proxy: {
-      '/api': {
-        target: process.env.VITE_API_URL || 'http://localhost:5003',
-        changeOrigin: true
-      }
-    }
+    outDir: 'dist'
   }
 })

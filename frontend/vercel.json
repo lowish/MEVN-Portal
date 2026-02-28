@@ -1,14 +1,24 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
+  "cleanUrls": true,
+  "functions": {
+    "api/**": {
+      "runtime": "nodejs20.x"
     }
-  ],
-  "env": {
-    "VITE_API_URL": "@vite_api_url",
-    "VITE_REGISTER_PATH": "@vite_register_path"
-  }
+  },
+  "routes": [
+    {
+      "src": "^/api/.*",
+      "continue": true
+    },
+    {
+      "src": "/assets/.*",
+      "continue": true
+    },
+    {
+      "src": ".*",
+      "dest": "/index.html"
+    }
+  ]
 }
