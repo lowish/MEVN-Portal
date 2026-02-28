@@ -10,9 +10,9 @@ const app = express();
 
 // CORS Configuration - Allow production frontend
 const corsOptions = {
-  origin: process.env.NODE_ENV === 'production' 
+  origin: process.env.FRONTEND_URL 
     ? [
-        'https://your-app.vercel.app',  // Replace with your Vercel frontend URL
+        process.env.FRONTEND_URL,
         /\.vercel\.app$/  // Allow any Vercel preview deployments
       ]
     : '*',  // Allow all in development
