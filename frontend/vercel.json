@@ -1,24 +1,8 @@
 {
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist",
-  "cleanUrls": true,
-  "functions": {
-    "api/**": {
-      "runtime": "nodejs20.x"
-    }
-  },
-  "routes": [
+  "rewrites": [
     {
-      "src": "^/api/.*",
-      "continue": true
-    },
-    {
-      "src": "/assets/.*",
-      "continue": true
-    },
-    {
-      "src": ".*",
-      "dest": "/index.html"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
