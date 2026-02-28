@@ -1,0 +1,12 @@
+node_modules
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+npm-debug.log
+yarn-error.log
+.git
+.gitignore
+README.md
+src/
+vite.config.js
