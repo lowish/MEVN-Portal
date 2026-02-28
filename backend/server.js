@@ -8,8 +8,20 @@ const studentRoutes = require('./routes/studentRoutes');
 
 const app = express();
 
+// CORS Configuration - Allow production frontend
+const corsOptions = {
+  origin: process.env.NODE_ENV === 'production' 
+    ? [
+        'https://your-app.vercel.app',  // Replace with your Vercel frontend URL
+        /\.vercel\.app$/  // Allow any Vercel preview deployments
+      ]
+    : '*',  // Allow all in development
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
 // Middleware
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -42,7 +54,14 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5003; // Change from 5002 to 5003
-app.listen(PORT, () => {
-  console.log(`✅ Server running on port ${PORT}`);
-  console.log(`📡 API endpoint: http://localhost:${PORT}/api`);
-});
+
+// Only start server if not in serverless environment
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`✅ Server running on port ${PORT}`);
+    console.log(`📡 API endpoint: http://localhost:${PORT}/api`);
+  });
+}
+
+// Export for Vercel serverless
+module.exports = app;
